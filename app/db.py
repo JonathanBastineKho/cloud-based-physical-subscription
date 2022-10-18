@@ -13,3 +13,6 @@ class Company(datab.Model):
     email = datab.Column(datab.String(250), nullable=False)
     username = datab.Column(datab.String(250), nullable=False)
     password = datab.Column(datab.String(1000), nullable=False)
+
+datab.create_all()
+print("initialize")
