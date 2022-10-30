@@ -4,7 +4,8 @@ module.exports = {
   content: [
       "./templates/**/*.html",
       "./static/src/**/*.js",
-      "./node_modules/flowbite/**/*.js"
+      "./node_modules/flowbite/**/*.js",
+      "./static/js/dashboard.js"
   ],
   theme: {
     extend: {},
