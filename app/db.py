@@ -27,12 +27,12 @@ class Door(datab.Model):
     door_id = datab.Column(datab.Integer, primary_key=True)
     description = datab.Column(datab.String(1000), nullable=False)
     company = datab.relationship("Company", back_populates="door")
-    company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username')) 
+    company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username'), primary_key=True) 
     key = datab.relationship("Key", back_populates="door")
 
 class Key(datab.Model):
     __tablename__ = "key"
-    company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username'), primary_key=True)
+    company_username = datab.Column(datab.Integer, datab.ForeignKey('door.company_username'), primary_key=True)
     door_id = datab.Column(datab.Integer, datab.ForeignKey('door.door_id'), primary_key=True)
     door = datab.relationship("Door", back_populates="key")
     user_username = datab.Column(datab.String(250), datab.ForeignKey('user.username'), primary_key=True)
