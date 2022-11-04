@@ -79,3 +79,7 @@ def logout():
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
+
+@app.route("/dashboard_content/<path:content>")
+def content(content):
+    return render_template(f"dashboardcomp/{content}.html")

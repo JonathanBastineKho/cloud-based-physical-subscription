@@ -5,7 +5,7 @@
 {% endblock head %}
 
 {% block body %}
-<nav id="navbar" class="z-50 bg-white px-2 sm:px-4 py-4 dark:bg-gray-800 fixed w-full top-0 left-0 border-b border-gray-200 dark:border-gray-600">
+<nav id="navbar" class="z-40 bg-white px-2 sm:px-4 py-4 dark:bg-gray-800 fixed w-full top-0 left-0 border-b border-gray-200 dark:border-gray-600">
     <div class="flex flex-wrap justify-between">
         <!-- left side -->
         <div class="flex items-center">
@@ -27,7 +27,7 @@
                     <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                         <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
                     </div>
-                    <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-72 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required>
+                    <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-80 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required>
                 </div>
             </form>
         </div>
@@ -108,7 +108,7 @@
             </a>
          </li>
          <li>
-            <a href="#" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+            <a onclick="requestDashboardPage('door');" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
                <span class="flex-1 ml-3 whitespace-nowrap">Doors</span>
             </a>
@@ -130,25 +130,43 @@
 </aside>
 
 <!-- Content -->
-<div id="main-content" class="mt-24 px-5 md:px-10">
+<div id="main-content" class="z-20">
    <!-- Dashboard -->
    <!-- To be Changed when Sidebar is clicked -->
-   <div role="status" class="p-4 rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700">
-      <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2.5"></div>
-      <div class="mb-10 w-48 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-      <div class="flex items-baseline mt-4 space-x-6">
-          <div class="w-full h-72 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
-          <div class="w-full h-56 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
-          <div class="w-full h-72 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
-          <div class="w-full h-64 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
-          <div class="w-full h-80 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
-          <div class="w-full h-72 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
-          <div class="w-full h-80 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
-      </div>
-      <span class="sr-only">Loading...</span>
-   </div>
-   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+   <div class="mt-24 px-5 md:px-20 md:mt-28">
       <div role="status" class="p-4 rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700">
+         <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2.5"></div>
+         <div class="mb-10 w-48 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+         <div class="flex items-baseline mt-4 space-x-6">
+             <div class="w-full h-72 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
+             <div class="w-full h-56 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
+             <div class="w-full h-72 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
+             <div class="w-full h-64 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
+             <div class="w-full h-80 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
+             <div class="w-full h-72 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
+             <div class="w-full h-80 bg-gray-200 rounded-t-lg dark:bg-gray-700"></div>
+         </div>
+         <span class="sr-only">Loading...</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+         <div role="status" class="p-4 rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700">
+            <div class="flex justify-center items-center mb-4 h-48 bg-gray-300 rounded dark:bg-gray-700">
+                <svg class="w-12 h-12 text-gray-200 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512"><path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z"/></svg>
+            </div>
+            <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+            <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+            <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+            <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+            <div class="flex items-center mt-4 space-x-3">
+                <svg class="w-14 h-14 text-gray-200 dark:text-gray-700" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
+                <div>
+                    <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2"></div>
+                    <div class="w-48 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                </div>
+            </div>
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div role="status" class="p-4 rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700">
          <div class="flex justify-center items-center mb-4 h-48 bg-gray-300 rounded dark:bg-gray-700">
              <svg class="w-12 h-12 text-gray-200 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512"><path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z"/></svg>
          </div>
@@ -166,39 +184,23 @@
          <span class="sr-only">Loading...</span>
      </div>
      <div role="status" class="p-4 rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700">
-      <div class="flex justify-center items-center mb-4 h-48 bg-gray-300 rounded dark:bg-gray-700">
-          <svg class="w-12 h-12 text-gray-200 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512"><path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z"/></svg>
+         <div class="flex justify-center items-center mb-4 h-48 bg-gray-300 rounded dark:bg-gray-700">
+            <svg class="w-12 h-12 text-gray-200 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512"><path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z"/></svg>
+         </div>
+         <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+         <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+         <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+         <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+         <div class="flex items-center mt-4 space-x-3">
+            <svg class="w-14 h-14 text-gray-200 dark:text-gray-700" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
+            <div>
+               <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2"></div>
+               <div class="w-48 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+            </div>
+            </div>
+               <span class="sr-only">Loading...</span>
+         </div>
       </div>
-      <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-      <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-      <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-      <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-      <div class="flex items-center mt-4 space-x-3">
-          <svg class="w-14 h-14 text-gray-200 dark:text-gray-700" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
-          <div>
-              <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2"></div>
-              <div class="w-48 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-          </div>
-      </div>
-      <span class="sr-only">Loading...</span>
-  </div>
-  <div role="status" class="p-4 rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700">
-   <div class="flex justify-center items-center mb-4 h-48 bg-gray-300 rounded dark:bg-gray-700">
-       <svg class="w-12 h-12 text-gray-200 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512"><path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z"/></svg>
-   </div>
-   <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-   <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-   <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-   <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-   <div class="flex items-center mt-4 space-x-3">
-       <svg class="w-14 h-14 text-gray-200 dark:text-gray-700" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
-       <div>
-           <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2"></div>
-           <div class="w-48 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-       </div>
-   </div>
-   <span class="sr-only">Loading...</span>
-</div>
    </div>
 </div>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
