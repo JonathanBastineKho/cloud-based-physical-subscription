@@ -763,7 +763,31 @@ class OrderAPI(API):
 			url=f"{self.__server}/orders/{orderCode}",
 			headers=header,
 		)
-	
+
+	def __request_payment(self, orderCode:str, successURL:str=None, errorURL:str=None, cancelURL:str=None) -> requests.Response:
+		"""
+		Requests the payment redirection of a specified order using GET Method.
+
+		Parameters:
+		- orderCode(str) = Order code.
+		
+		Optional Parameters:
+		- successURL(str) = URL to be redirected to when payment is successful. Defaults to blank.
+		- errorURL(str) = URL to be redirected to if payment fails. Defaults to blank.
+		- cancelURL(str) = URL to be redirected to if the payment is canceled. Defaults to blank.
+
+		Returns a request Response
+		"""
+		header = {
+			"accept": "*/*",
+			"Secret-Token": self.__token
+		}
+
+		return requests.get(
+			url=self.get_payment_url(orderCode, successURL, errorURL, cancelURL),
+			headers=header,
+		)
+
 	def create(self, customerCode:str, productCode:str, priceCode:str) -> dict:
 		"""
 		Creates a new order.
@@ -797,6 +821,57 @@ class OrderAPI(API):
 		if res.status_code != 200:
 			return {"success": False, "message": f"Failed to retrieve Order {orderCode}'s data."}
 		return {"success": True,  "message": json.loads(res.text)}
+	
+	def get_payment_url(self, orderCode:str, successURL:str=None, errorURL:str=None, cancelURL:str=None) -> str:
+		"""
+		Retrieves the payment url of a specified order.
+
+		Parameters:
+		- orderCode(str) = Order code.
+		
+		Optional Parameters:
+		- successURL(str) = URL to be redirected to when payment is successful. Defaults to blank.
+		- errorURL(str) = URL to be redirected to if payment fails. Defaults to blank.
+		- cancelURL(str) = URL to be redirected to if the payment is canceled. Defaults to blank.
+
+		Returns a string containing the payment URL.
+		"""	
+		url = f"{self.__server}/orders/{orderCode}/pay"
+
+		list_of_urls = []
+		if successURL != None:
+			list_of_urls.append(f"successUrl={successURL}")
+		if errorURL != None:
+			list_of_urls.append(f"errorUrl={errorURL}")
+		if cancelURL != None:
+			list_of_urls.append(f"cancelUrl={cancelURL}")
+		
+		if len(list_of_urls) > 0:
+			url += ("?" + "&".join(list_of_urls))
+		
+		return url
+
+	def redirect_to_payment(self, orderCode:str, successURL:str=None, errorURL:str=None, cancelURL:str=None) -> str:
+		"""
+		Redirects to the payment gateway of a specified order.
+
+		Parameters:
+		- orderCode(str) = Order code.
+		
+		Optional Parameters:
+		- successURL(str) = URL to be redirected to when payment is successful. Defaults to blank.
+		- errorURL(str) = URL to be redirected to if payment fails. Defaults to blank.
+		- cancelURL(str) = URL to be redirected to if the payment is canceled. Defaults to blank.
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""	
+		res = self.__request_payment(orderCode, successURL, errorURL, cancelURL)
+		if res.status_code != 200:
+			return {"success": False, "message": f"Failed to redirect to Order {orderCode}'s payment url."}
+		return {"success": True,  "message": res.text}
+		
 
 def main():
 	load_dotenv("../.env")
@@ -819,8 +894,7 @@ def main():
 	c = CustomerAPI(steppay_key)
 	p = ProductAPI(steppay_key)
 	o = OrderAPI(steppay_key)
-	res = o.info("order_qXb1fDEnK")
+	res = o.redirect_to_payment("order_qXb1fDEnK", "www.success.com", "www.erorr.com", "www.cancel.com")
 	print(res)
-
 if __name__ == "__main__":
 	main()
