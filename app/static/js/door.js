@@ -3,9 +3,9 @@ const edit = document.getElementById('editProductModal');
 const add = document.getElementById('addProductModal');
 
 // options with default values
-const optionsModal = {
+const options = {
   placement: 'bottom-right',
-  backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-50',
+  backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40',
   onHide: () => {
       console.log('modal is hidden');
   },
@@ -17,8 +17,8 @@ const optionsModal = {
   }
 };
 
-const editModal = new Modal(edit, optionsModal);
-const addModal = new Modal(add, optionsModal);
+const editModal = new Modal(edit, options);
+const addModal = new Modal(add, options);
 
 function toggleEditItem(){
     editModal.toggle();

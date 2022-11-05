@@ -1,29 +1,16 @@
-var drawer;
 // Drawer function
-$(document).ready(function(){
-    // requestDashboardPage("dashboard");
-    const aside = document.getElementById("sidebar");
+// $(document).ready(function(){
+//     requestDashboardPage("dashboard");
+// });
 
-    const options = {
-        backdrop: true,
-        bodyScrolling: false,
-        edge: false,
-        edgeOffset: '',
-        backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-20',
-        onHide: () => {
-            $("#open").removeClass("hidden");
-            $("#close").addClass("hidden");
-        },
-        onShow: () => {
-            $("#open").addClass("hidden");
-            $("#close").removeClass("hidden");
-        },
-    };
-    drawer = new Drawer(aside, options);
-});
-
-function toggleDrawer(){
-    drawer.toggle();
+function switchDrawer(btn){
+    if (btn == "open"){
+        $("#open").addClass("hidden");
+        $("#close").removeClass("hidden");
+    } else {
+        $("#open").removeClass("hidden");
+        $("#close").addClass("hidden");
+    }
 }
 
 function requestDashboardPage(dashboardPage){

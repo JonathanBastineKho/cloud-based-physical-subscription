@@ -69,7 +69,7 @@
         </div>
     </div>
 </div>
-<div id="editProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 w-full md:inset-0 h-modal md:h-full" style="z-index: 60;">
+<div id="editProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
     <div class="relative p-4 w-full h-full md:h-screen md:w-screen top-0 left-0 flex">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-800 max-w-2xl m-auto">
@@ -120,7 +120,7 @@
         </div>
     </div>
 </div>
-<div id="addProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 w-full md:inset-0 h-modal md:h-full" style="z-index: 60;>
+<div id="addProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
     <div class="relative p-4 w-full h-full md:h-screen md:w-screen top-0 left-0 flex">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-800 max-w-2xl m-auto">
@@ -135,13 +135,17 @@
             </div>
             <!-- Modal body -->
             <form class="p-6 gap-y-4 md:gap-y-6 gap-x-4 grid md:grid-cols-2 grid-cols-1" action="#">
-                <div class="md:col-span-2">
-                    <label for="product_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Door Name</label>
-                    <input type="text" name="email" id="product_name" class="w-full bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Gym door 1" required="">
+                <div>
+                    <label for="product_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
+                    <input type="text" name="email" id="product_name" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-60 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Gym door 1" required="">
                 </div>
                 <div>
                     <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                    <input type="category" name="category" id="category" placeholder="Workplace" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-64 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                    <input type="category" name="category" id="category" placeholder="Workplace" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                </div>
+                <div>
+                    <label for="serial-number" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Serial Number</label>
+                    <input type="serial-number" name="serial-number" id="serial-number" placeholder="SN1234" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
                 </div>
                 <div>
                     <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price $</label>
@@ -156,7 +160,7 @@
                     </div>
                 </div>
                 <div class="md:col-span-2">
-                    <label for="product-details" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Door Description</label>
+                    <label for="product-details" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Serial Number</label>
                     <textarea type="product-details" rows="4" name="product-details" id="product-details" placeholder="e.g This is just a demo for the door API phonepass, you can put any description here" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required=""></textarea>
                 </div>
             </form>
