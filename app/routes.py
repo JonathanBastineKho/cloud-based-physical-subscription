@@ -3,6 +3,16 @@ from app import app, login_manager, bcrypt, datab
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import User, Company
 from flask import session
+from functools import wraps
+
+def company_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user.is_authenticated and session.get("user_type") == "company":
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('complogin'))
+    return decorated_function
 
 @login_manager.user_loader
 def load_user(username):
@@ -77,9 +87,11 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route("/dashboard")
+@company_only
 def dashboard():
     return render_template("dashboard.html")
 
 @app.route("/dashboard_content/<path:content>")
+@company_only
 def content(content):
     return render_template(f"dashboardcomp/{content}.html")
