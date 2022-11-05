@@ -95,3 +95,7 @@ def dashboard():
 @company_only
 def content(content):
     return render_template(f"dashboardcomp/{content}.html")
+
+@app.route("/door")
+def door():
+    return render_template("product.html")
