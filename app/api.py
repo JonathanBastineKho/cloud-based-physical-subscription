@@ -362,7 +362,7 @@ class ProductAPI(API):
 		"""
 		header = {
 			"accept": "*/*",
-			"Secret-Token": "f94276067531989d16964ff07710860407a4b175c2f2a2179a89d0876f4d4755"
+			"Secret-Token": self.__token
 		}
 		return requests.get(
 			url=f"{self.__server}/products/{productCode}",
@@ -380,7 +380,7 @@ class ProductAPI(API):
 		"""
 		header = {
 			"accept": "*/*",
-			"Secret-Token": "f94276067531989d16964ff07710860407a4b175c2f2a2179a89d0876f4d4755"
+			"Secret-Token": self.__token
 		}
 		return requests.delete(
 			url=f"{self.__server}/products/{productID}",
@@ -409,10 +409,12 @@ class ProductAPI(API):
 		msg =  json.loads(product.text)
 		pricing = self.__request_create_price(msg["id"], price, interval, unit)
 		if pricing.status_code != 201:
+			self.delete(msg.get("id"))
 			return {"success": False, "message": f"Successfully created Product {msg['id']}, but failed to create price plan."}
 		msg["prices"] = json.loads(pricing.text)
 		status = self.__request_update_status(msg["id"], "SALE")
 		if status.status_code != 200:
+			self.delete(msg.get("id"))
 			return {"success": False, "message": f"Successfully created Product {msg['id']} with Pricing {pricing['id']}, BUT Failed to update STATUS"}
 		msg["status"] = json.loads(status.text)
 		return {"success": True,  "message": msg}
@@ -596,7 +598,7 @@ class CustomerAPI(API):
 		"""
 		header = {
 			"accept": "*/*",
-			"Secret-Token": "f94276067531989d16964ff07710860407a4b175c2f2a2179a89d0876f4d4755"
+			"Secret-Token": self.__token
 		}
 		return requests.get(
 			url=f"{self.__server}/customers/{customerID}",
@@ -614,7 +616,7 @@ class CustomerAPI(API):
 		"""
 		header = {
 			"accept": "*/*",
-			"Secret-Token": "f94276067531989d16964ff07710860407a4b175c2f2a2179a89d0876f4d4755"
+			"Secret-Token": self.__token
 		}
 		return requests.delete(
 			url=f"{self.__server}/customers/{customerID}",
@@ -854,6 +856,8 @@ class OrderAPI(API):
 	def redirect_to_payment(self, orderCode:str, successURL:str=None, errorURL:str=None, cancelURL:str=None) -> str:
 		"""
 		Redirects to the payment gateway of a specified order.
+		Redirection is done through the returning of a HTML template string, 
+		and can be rendered with flask's `render_template_string`
 
 		Parameters:
 		- orderCode(str) = Order code.
@@ -875,26 +879,19 @@ class OrderAPI(API):
 
 def main():
 	load_dotenv("../.env")
-	# phonepass_id = os.environ.get("PHONEPASS_ID")
-	# phonepass_pw = os.environ.get("PHONEPASS_PW")
-	# phonepass_door = os.environ.get("PHONEPASS_DOOR")
-	# door = DoorAPI(phonepass_id, phonepass_pw)
-	# door.print_api_key()
-	# print("API TESTING\n")
-	# status = door.check_status(phonepass_door)
-	# print(status)
-	# print("UNLOCK")
-	# print(door.unlock(phonepass_door))
-	# print("STATUS=",door.check_status(phonepass_door))
-	# print("LOCK")
-	# print(door.lock(phonepass_door))
-	# print("STATUS=",door.check_status(phonepass_door))
-
+	phonepass_id = os.environ.get("PHONEPASS_ID")
+	phonepass_pw = os.environ.get("PHONEPASS_PW")
+	phonepass_door = os.environ.get("PHONEPASS_DOOR")
 	steppay_key = os.environ.get("STEPPAY_SECRET_KEY")
+
 	c = CustomerAPI(steppay_key)
 	p = ProductAPI(steppay_key)
 	o = OrderAPI(steppay_key)
-	res = o.redirect_to_payment("order_qXb1fDEnK", "www.success.com", "www.erorr.com", "www.cancel.com")
+	d = DoorAPI(phonepass_id, phonepass_pw)
+	
+	res = o.create("customer_CkW0OAAH7", "product_oCAlmzQY9", "price_9ooXT2Dbh")
 	print(res)
+
 if __name__ == "__main__":
 	main()
+
