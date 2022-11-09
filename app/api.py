@@ -18,37 +18,33 @@ class DoorAPI(API):
 	__test_server = "https://nokeyoneoffi.com/phonepass"
 	__op_server = "https://ppass.co.kr/phonepass"
 
-	def __init__(self, id:str, pw:str) -> None:
+	def __init__(self) -> None:
 		"""
 		Initialize a DoorAPI instance object.
-
-		Parameters:
-		- ID(str) = secret API ID for PhonePass API
-		- PW(str) = secret API Password for PhonePass API
 		"""
-		# Instance attributes
-		self.__phonepass_id = id
-		self.__phonepass_pw = pw
+		pass
 
 	def print_api_key(self):
 		"""
-		Prints out the API keys used in the constructor. (FOR DEBUG PURPSOSES)
+		Prints out the API server used in the methods. (FOR DEBUG PURPSOSES)
 		"""
-		print(f"ID = {self.__phonepass_id}, PW = {self.__phonepass_pw}")
+		print(f"TEST = {self.__test_server}, OP = {self.__op_server}")
 
 	# Private Request Status METHOD
-	def __request_status(self, doorID:str) -> requests.Response:
+	def __request_status(self, id:str, password:str, doorID:str) -> requests.Response:
 		"""
 		Requests the status of door using POST Method.
 
 		Parameters:
+		- id(str) = secret API ID for PhonePass API
+		- password(str) = secret API Password for PhonePass API
 		- doorID(str) = serialnumber/identifier of Door
 
 		Returns a request Response
 		"""
 		param_data = {
-			"id": self.__phonepass_id,
-			"pw": self.__phonepass_pw,
+			"id": id,
+			"pw": password,
 			"sn": doorID
 		}
 		return requests.post(
@@ -57,20 +53,22 @@ class DoorAPI(API):
 		)
 
 	# Private Request Lock METHOD
-	def __request_lock(self, doorID:str) -> requests.Response:
+	def __request_lock(self, id:str, password:str, doorID:str, phone:str) -> requests.Response:
 		"""
 		Requests the locking of door using POST Method.
 
 		Parameters:
+		- id(str) = secret API ID for PhonePass API
+		- password(str) = secret API Password for PhonePass API
 		- doorID(str) = serialnumber/identifier of Door
-
+		- phone(str) = phone number of user (For logging).
 		Returns a request Response
 		"""
 		param_data = {
-			"id": self.__phonepass_id,
-			"pw": self.__phonepass_pw,
+			"id": id,
+			"pw": password,
 			"sn": doorID,
-			"phone": "01011113333"
+			"phone": phone
 		}
 		return requests.post(
 			url=f"{self.__op_server}/p/iot/api/close.do",
@@ -78,21 +76,24 @@ class DoorAPI(API):
 		)
 
 	# Private Request Unlock METHOD
-	def __request_unlock(self, doorID:str, delay:int=0) -> requests.Response:
+	def __request_unlock(self, id:str, password:str, doorID:str, phone:str, delay:int=0) -> requests.Response:
 		"""
 		Requests the unlocking of door using POST Method.
 
 		Parameters:
+		- id(str) = secret API ID for PhonePass API
+		- password(str) = secret API Password for PhonePass API
 		- doorID(str) = serialnumber/identifier of Door
+		- phone(str) = phone number of user (For logging).
 		- delay(int) = Locked waiting time in minutes (0-255). Defaults 0.
 
 		Returns a request Response
 		"""
 		param_data = {
-			"id": self.__phonepass_id,
-			"pw": self.__phonepass_pw,
+			"id": id,
+			"pw": password,
 			"sn": doorID,
-			"phone": "01011113333",
+			"phone": phone,
 			"delay": delay
 		}
 		return requests.post(
@@ -100,11 +101,13 @@ class DoorAPI(API):
 			data=param_data
 		)
 
-	def check_status(self, doorID:str) -> str:
+	def check_status(self, id:str, password:str, doorID:str) -> str:
 		"""
 		Method to retrieve the status of a door
 
 		Parameters:
+		- id(str) = secret API ID for PhonePass API
+		- password(str) = secret API Password for PhonePass API
 		- doorID(str) = serialnumber/identifier of Door
 		
 		Returns door status dictionary with keys:
@@ -115,7 +118,7 @@ class DoorAPI(API):
 				if Fail(SVC_CODE 302, 901, 904):
 					"result" will represent the SVC_CODE : SVC_Message 
 		"""
-		request = self.__request_status(doorID)
+		request = self.__request_status(id, password, doorID)
 		result_info = json.loads(request.content)
 		result_svc = result_info.get("SVC_CODE")
 		if result_svc == "100":
@@ -123,13 +126,16 @@ class DoorAPI(API):
 		else:
 			return {"success": False, "result": f"RESPONSE {result_svc}: {result_info.get('SVC_MSGE')}"}
 	
-	def lock(self, doorID:str):
+	def lock(self, id:str, password:str, doorID:str, phone:str):
 		"""
 		Method to lock a door
 
 		Parameters:
+		- id(str) = secret API ID for PhonePass API
+		- password(str) = secret API Password for PhonePass API
 		- doorID(str) = serialnumber/identifier of Door
-		
+		- phone(str) = phone number of user (For logging).
+
 		Returns door status dictionary with keys:
 			- "success": (Bool) represents the success of request. 
 			- "result": (str) represents the result of the requests (differ depending on "success")
@@ -138,7 +144,7 @@ class DoorAPI(API):
 				if Fail(SVC_CODE 302, 901, 904):
 					"result" will represent the SVC_CODE : SVC_Message 
 		"""
-		request = self.__request_lock(doorID)
+		request = self.__request_lock(id, password, doorID, phone)
 		result_info = json.loads(request.content)
 		result_svc = result_info.get("SVC_CODE")
 		if result_svc == "100":
@@ -146,12 +152,15 @@ class DoorAPI(API):
 		else:
 			return {"success": False, "result": f"RESPONSE {result_svc}: {result_info.get('SVC_MSGE')}"}
 
-	def unlock(self, doorID:str, delay:int=0):
+	def unlock(self, id:str, password:str, doorID:str, phone:str, delay:int=0):
 		"""
 		Method to unlock a door
 
 		Parameters:
-		- doorID(str) = serialnumber/identifier of Door
+		- id(str) = secret API ID for PhonePass API
+		- password(str) = secret API Password for PhonePass API
+		- doorID(str) = serialnumber/identifier of Door		
+		- phone(str) = phone number of user (For logging).
 		- delay(int) = Locked waiting time in minutes (0-255). Defaults 0.
 
 		Returns door status dictionary with keys:
@@ -162,7 +171,7 @@ class DoorAPI(API):
 				if Fail(SVC_CODE 302, 901, 904):
 					"result" will represent the SVC_CODE : SVC_Message 
 		"""
-		request = self.__request_unlock(doorID, delay)
+		request = self.__request_unlock(id, password, doorID, phone, delay)
 		result_info = json.loads(request.content)
 		result_svc = result_info.get("SVC_CODE")
 		if result_svc == "100":
@@ -1041,10 +1050,9 @@ def main():
 	c = CustomerAPI(steppay_key)
 	p = ProductAPI(steppay_key)
 	o = OrderAPI(steppay_key)
-	d = DoorAPI(phonepass_id, phonepass_pw)
+	d = DoorAPI()
 	
-	res = p.init_product(3994, "product_cDTy1Sm9D", "new", "", "", 2331)
-	print(res)
+	# Start testing here
 
 if __name__ == "__main__":
 	main()
