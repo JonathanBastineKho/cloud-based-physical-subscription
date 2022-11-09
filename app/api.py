@@ -222,15 +222,16 @@ class ProductAPI(API):
 			json=param_data
 		)
 
-	def __request_create_price(self, productID:int, price:float, interval:str, unit:str) -> requests.Response: 
+	def __request_create_price(self, productID:int, price:float, unit:str, type:str, interval:str, main:bool) -> requests.Response: 
 		"""
 		Requests the creation of a new price plan for a specified product using POST Method.
 
 		Parameters:
 		- productID(int) = Product ID.
 		- price(float) = Product price (per interval)
-		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"].
-		- unit(str) = unit of price.
+		- unit(str) = unit of product quantity. (eg. Session, Room, Pax, etc)
+		- type(str) = type of pricing either ["ONE_TIME", "FLAT"]
+		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"]. Only required if type="FLAT".
 
 		Returns a request Response
 		"""
@@ -241,19 +242,22 @@ class ProductAPI(API):
 		}
 		param_data = {
 			"plan": {
-				"name": "Default",
-				"description": "Default Price",
-			},
-			"recurring": {
-				"intervalCount": 1,
-				"interval": interval,
-				"usageType": "LICENSED",
-				"aggregateUsageType": "SUM"
+				"name": f"{type}_{interval}",
+				"description": f"{type}_{interval} Price",
 			},
 			"price": price,
 			"unit": unit,
-			"type": "FLAT"
+			"type": type,
+			"isRepresentative": main
 		}
+		
+		if type == "FLAT":
+			param_data["recurring"] = {
+										"intervalCount": 1,
+										"interval": interval,
+										"usageType": "LICENSED",
+										"aggregateUsageType": "SUM"
+									}
 
 		return requests.post(
 			url=f"{self.__server}/products/{productID}/prices",
@@ -294,7 +298,7 @@ class ProductAPI(API):
 			json=param_data
 		)
 
-	def __request_update_price(self, productID:int, priceID:int, price:float=None, interval:str=None, unit:str=None) -> requests.Response:
+	def __request_update_price(self, productID:int, priceID:int, price:float=None,  unit:str=None, main:bool=None) -> requests.Response:
 		"""
 		Requests the update of a specified price plan's data using PUT Method.
 
@@ -304,8 +308,8 @@ class ProductAPI(API):
 
 		Optional parameters (Leaving them blank would not update the data):
 		- price(float) = Product price (per interval)
-		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"].
-		- unit(str) = unit of price.
+		- unit(str) = unit of product quantity. (eg. Session, Room, Pax, etc)
+		- main(bool) = is the main price. Defaults to False.
 
 		Returns a request Response
 		"""
@@ -314,18 +318,16 @@ class ProductAPI(API):
 			"content-type": "application/json",
 			"Secret-Token": self.__token
 		}
+		plan = json.loads(self.__request_price_info(productID, priceID).text)["plan"]
 		param_data = {
-			"plan": {
-				"name": "Default",
-				"description": "Default Price",
-			}
+			"plan": plan
 		}
 		if price != None:
 			param_data["price"] = price 
-		# if interval != None:
-		# 	param_data["recurring"]["interval"] = interval 
 		if unit != None:
 			param_data["unit"] = unit 
+		if main != None:
+			param_data["isRepresentative"] = main
 
 		return requests.put(
 			url=f"{self.__server}/products/{productID}/prices/{priceID}",
@@ -369,6 +371,24 @@ class ProductAPI(API):
 			headers=header,
 		)
 	
+	def __request_price_info(self, productID:int, priceID:int) -> requests.Response:
+		"""
+		Requests a specified product price plan's information using GET Method.
+
+		Parameters:
+		- productID(int) = Product id.
+		- priceID(int) = Price plan id.
+
+		Returns a request Response
+		"""
+		header = {
+			"accept": "*/*",
+			"Secret-Token": self.__token
+		}
+		return requests.get(
+			url=f"{self.__server}/products/{productID}/prices/{priceID}",
+			headers=header,
+		)	
 	def __request_delete(self, productID:int) -> requests.Response:
 		"""
 		Requests the deletion of a specified product using DELETE Method.
@@ -387,17 +407,14 @@ class ProductAPI(API):
 			headers=header,
 		)
 
-	def create(self, name:str, imageURL:str, description:str, price:float, interval:str="MONTH", unit:str="SGD") -> dict:
+	def create(self, name:str, imageURL:str, description:str) -> dict:
 		"""
-		Creates a new product ready for SALE.
+		Creates a new product (without pricing plan and is UNSOLD).
 
 		Parameters:
 		- name(str) = Product name.
 		- imageURL(str) = url to product image.
 		- description(str) = Product description.
-		- price(float) = Product price (per interval)
-		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"]. Defaults to "MONTH".
-		- unit(str) = Unit of the price. Defaults to "SGD".
 
 		Returns a dictionary with keys:
 			"success": (bool) True if everything went through perfectly without any issues.
@@ -405,18 +422,68 @@ class ProductAPI(API):
 		"""
 		product = self.__request_create_product(name, imageURL, description)
 		if product.status_code != 201:
-			return {"success": False, "message": f"Failed to create Product."}
-		msg =  json.loads(product.text)
-		pricing = self.__request_create_price(msg["id"], price, interval, unit)
+			return {"success": False, "message": f"<{product.status_code}> Failed to create Product."}
+		return {"success": True,  "message": json.loads(product.text)}
+
+	def create_price(self, productID:int, price:float, unit:str="auto", recurring:bool=True, interval:str="MONTH", main:bool=False) -> dict:
+		"""
+		Creates a new price plan for a specified product.
+
+		Parameters:
+		- productID(int) = Product ID.
+		- price(float) = Product price (per interval)
+		- unit(str) = unit of product quantity. (eg. Session, Room, Pax, etc). Defaults to auto.
+		Automated unit sets the unit to "items" when recurring=False, and sets the unit to match the interval when recurring=True.
+		- recurring(bool) = If product's pricing plan is recurring or not. Defaults to True.
+		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"]. Defaults to "MONTH". Only needed if recurring=True.
+		- main(bool) = If it is the main price plan of the product. Defaults to False.
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""
+		type = "FLAT" if recurring else "ONE_TIME"
+		if unit == "auto":
+			units = interval if recurring else "items"
+		else:
+			units = unit
+		pricing = self.__request_create_price(productID, price, unit=units, type=type, interval=interval, main=main)
+
 		if pricing.status_code != 201:
-			self.delete(msg.get("id"))
-			return {"success": False, "message": f"Successfully created Product {msg['id']}, but failed to create price plan."}
-		msg["prices"] = json.loads(pricing.text)
-		status = self.__request_update_status(msg["id"], "SALE")
-		if status.status_code != 200:
-			self.delete(msg.get("id"))
-			return {"success": False, "message": f"Successfully created Product {msg['id']} with Pricing {pricing['id']}, BUT Failed to update STATUS"}
-		msg["status"] = json.loads(status.text)
+			return {"success": False, "message": f"<{pricing.status_code}> Failed to create price plan for product {productID}."}
+		return {"success": True,  "message": json.loads(pricing.text)}
+
+	def create_complete(self, name:str, imageURL:str, description:str, price:float, unit:str="auto", recurring:bool=True, interval:str="MONTH") -> dict:
+		"""
+		Creates a new complete product ready for SALE.
+
+		Parameters:
+		- name(str) = Product name.
+		- imageURL(str) = url to product image.
+		- description(str) = Product description.
+		- price(float) = Product price (per interval)
+		- unit(str) = unit of product quantity. (eg. Session, Room, Pax, etc). Defaults to auto.
+		Automated unit sets the unit to "items" when recurring=False, and sets the unit to match the interval when recurring=True.		- recurring(bool) = If product's pricing plan is recurring or not. Defaults to True.
+		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"]. Defaults to "MONTH". Only needed if recurring=True.
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""
+		product = self.create(name, imageURL, description)
+		if not product["success"]:
+			return product
+		msg = product["message"]
+		
+		pricing = self.create_price(msg["id"], price, unit, recurring, interval, main=True)
+		if not pricing["success"]:
+			return pricing
+		msg["prices"] = pricing["message"]
+		
+		status = self.update_posting_status(msg["id"], "SALE")
+		if not status["success"]:
+			return status
+		msg["status"] = status["message"]
 		return {"success": True,  "message": msg}
 
 	def update_posting_status(self, productID:int, status:str="SALE") -> dict:
@@ -434,9 +501,55 @@ class ProductAPI(API):
 		res = self.__request_update_status(productID, status)
 		if res.status_code == 200:
 			return {"success": True,  "message": f"Successfully set status of product {productID} to '{status}'."}
-		return {"success": False,  "message": f"Failed to set status of product {productID} to '{status}'."}
+		return {"success": False,  "message": f"<{res.status_code}> Failed to set status of product {productID} to '{status}'."}
 		 
-	def update_data(self, product_id:int, price_id:int, name:str=None, imageURL:str=None, 
+	def update_data(self, product_id:int,name:str=None, imageURL:str=None, description:str=None):
+		"""
+		Updates a specified product's main data.
+
+		Parameters:
+		- productID(int) = Product ID.
+
+		Optional parameters (Leaving them blank would not update the data):
+		- name(str) = Product name.
+		- imageURL(str) = url to product image.
+		- description(str) = Product description.
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""
+		if name!=None or imageURL!=None or description!=None:
+			update_product = self.__request_update_data(product_id, name, imageURL, description)
+			if update_product.status_code == 200:
+				return {"success": True,  "message": json.loads(update_product.text)}
+			return {"success": False, "message": f"<{update_product.status_code}> Failed to update Product data."}
+		return {"success": False, "message": f"No parameters inputted."}
+	
+	def update_price(self, product_id:int, price_id:int, price:float=None, unit:str=None, main:bool=None):
+		"""
+		Updates a specified product price plan's data.
+
+		Parameters:
+		- productID(int) = Product ID.
+		- priceID(int) = Price plan ID.
+
+		Optional parameters (Leaving them blank would not update the data):
+		- price(float) = Product price (per interval)
+		- unit(str) = unit of product quantity. (eg. Session, Room, Pax, etc)
+		- main(bool) = is the main price. Defaults to False.
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""
+		if price!=None or unit!=None or main!=None:
+			update_price = self.__request_update_price(product_id, price_id, price, unit, main)
+			if update_price.status_code != 200:
+				return {"success": False, "message": f"<{update_price.status_code}> Failed to update Product's pricing data."}
+			return {"success": True, "message": json.loads(update_price.text)}
+
+	def update_data_complete(self, product_id:int, price_id:int, name:str=None, imageURL:str=None, 
 							description:str=None, price:float=None, interval:str=None, unit:str=None) -> dict:
 		"""
 		Updates a specified product's data.
@@ -451,7 +564,7 @@ class ProductAPI(API):
 		- description(str) = Product description.
 		- price(float) = Product price (per interval)
 		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"].
-		- unit(str) = unit of price
+		- unit(str) = unit of product quantity. (eg. Session, Room, Pax, etc)
 
 		Returns a dictionary with keys:
 			"success": (bool) True if everything went through perfectly without any issues.
@@ -460,13 +573,54 @@ class ProductAPI(API):
 		if name!=None or imageURL!=None or description!=None:
 			update_product = self.__request_update_data(product_id, name, imageURL, description)
 			if update_product.status_code != 200:
-				return {"success": False, "message": f"Failed to update Product data."}
+				return {"success": False, "message": f"<{update_product.status_code}> Failed to update Product data."}
 		if price!=None or interval!=None or unit!=None:
 			update_price = self.__request_update_price(product_id, price_id, price, interval, unit)
 			if update_price.status_code != 200:
-				return {"success": False, "message": f"Failed to update Product's pricing data."}
+				return {"success": False, "message": f"<{update_price.status_code}> Failed to update Product's pricing data."}
 		msg = json.loads(update_product.text)
 		msg["prices"] = json.loads(update_price.text)
+		return {"success": True,  "message": msg}
+
+	def init_product(self, productID:int, productCode:int, name:str, imageURL:str, description:str, price:float, unit:str="auto", recurring:bool=True, interval:str="MONTH") -> dict:
+		"""
+		Initializes a new blank product to be ready for SALE.
+
+		Parameters:
+		- productID(int) = Product ID.
+		- productCode(str) = Product code.
+		- name(str) = Product name.
+		- imageURL(str) = url to product image.
+		- description(str) = Product description.
+		- price(float) = Product price (per interval)
+		- unit(str) = unit of product quantity. (eg. Session, Room, Pax, etc). Defaults to auto.
+		Automated unit sets the unit to "items" when recurring=False, and sets the unit to match the interval when recurring=True.		- recurring(bool) = If product's pricing plan is recurring or not. Defaults to True.
+		- interval(str) = interval of payment either ["DAY", "WEEK", "MONTH", "YEAR"]. Defaults to "MONTH". Only needed if recurring=True.
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""
+		info = self.info(productCode)
+		if not info["success"]:
+			return info
+		elif len(info["message"]["prices"]) > 0 or info["message"]["status"] == "SALE":
+			return {"success":False, "message": f"Product {productID} has already been initialized"}
+
+		product = self.update_data(productID, name, imageURL, description)
+		if not product["success"]:
+			return product
+		msg =  product["message"]
+		
+		pricing = self.create_price(productID, price, unit, recurring, interval, main=True)
+		if not pricing["success"]:
+			return pricing
+		msg["prices"] = pricing["message"]
+		
+		status = self.update_posting_status(productID, "SALE")
+		if not status["success"]:
+			return status
+		msg["status"] = status["message"]
 		return {"success": True,  "message": msg}
 
 	def info(self, productCode:str, onlyPrice:bool=False) -> dict:
@@ -483,7 +637,7 @@ class ProductAPI(API):
 		"""
 		res = self.__request_info(productCode)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to retrieve customer {productCode}'s data."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to retrieve customer {productCode}'s data."}
 		info = json.loads(res.text)
 		if onlyPrice:
 			return {"success": True,  "message": info["prices"]}
@@ -502,7 +656,7 @@ class ProductAPI(API):
 		"""
 		res = self.__request_delete(productID)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to delete customer {productID}."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to delete customer {productID}."}
 		return {"success": True,  "message": f"Successfully deleted customer {productID}."}
 	
 		
@@ -638,7 +792,7 @@ class CustomerAPI(API):
 		"""
 		res = self.__request_create(name, email, phone)
 		if res.status_code != 201:
-			return {"success": False, "message": f"Failed to create new customer."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to create new customer."}
 		return {"success": True,  "message": json.loads(res.text)}
 	
 	def update(self, customerID:int, name:str, email:str, phone:str=None) -> dict:
@@ -659,7 +813,7 @@ class CustomerAPI(API):
 		"""
 		res = self.__request_update(customerID, name, email, phone)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to update customer {customerID}'s data."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to update customer {customerID}'s data."}
 		return {"success": True,  "message": json.loads(res.text)}
 
 	def info(self, customerID:int) -> dict:
@@ -675,7 +829,7 @@ class CustomerAPI(API):
 		"""
 		res = self.__request_info(customerID)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to retrieve customer {customerID}'s data."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to retrieve customer {customerID}'s data."}
 		return {"success": True,  "message": json.loads(res.text)}
 
 	def delete(self, customerID:int) -> dict:
@@ -690,7 +844,7 @@ class CustomerAPI(API):
 		"""
 		res = self.__request_delete(customerID)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to delete customer {customerID}."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to delete customer {customerID}."}
 		return {"success": True,  "message": f"Successfully deleted customer {customerID}."}
 
 
@@ -805,7 +959,7 @@ class OrderAPI(API):
 		"""
 		res = self.__request_create(customerCode, productCode, priceCode)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to create order for customer({customerCode}), product({productCode}), price({priceCode})."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to create order for customer({customerCode}), product({productCode}), price({priceCode})."}
 		return {"success": True,  "message": json.loads(res.text)}
 
 	def info(self, orderCode:str) -> dict:
@@ -821,7 +975,7 @@ class OrderAPI(API):
 		"""
 		res = self.__request_info(orderCode)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to retrieve Order {orderCode}'s data."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to retrieve Order {orderCode}'s data."}
 		return {"success": True,  "message": json.loads(res.text)}
 	
 	def get_payment_url(self, orderCode:str, successURL:str=None, errorURL:str=None, cancelURL:str=None) -> str:
@@ -873,7 +1027,7 @@ class OrderAPI(API):
 		"""	
 		res = self.__request_payment(orderCode, successURL, errorURL, cancelURL)
 		if res.status_code != 200:
-			return {"success": False, "message": f"Failed to redirect to Order {orderCode}'s payment url."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to redirect to Order {orderCode}'s payment url."}
 		return {"success": True,  "message": res.text}
 		
 
@@ -889,7 +1043,7 @@ def main():
 	o = OrderAPI(steppay_key)
 	d = DoorAPI(phonepass_id, phonepass_pw)
 	
-	res = o.create("customer_CkW0OAAH7", "product_oCAlmzQY9", "price_9ooXT2Dbh")
+	res = p.init_product(3994, "product_cDTy1Sm9D", "new", "", "", 2331)
 	print(res)
 
 if __name__ == "__main__":
