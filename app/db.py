@@ -19,21 +19,25 @@ class Company(UserMixin, datab.Model):
     password = datab.Column(datab.String(1000), nullable=False)
     address = datab.Column(datab.String(250), nullable=False)
     door = datab.relationship("Door", back_populates="company")
+    phonepass_id = datab.Column(datab.String(1000))
+    phonepass_pw = datab.Column(datab.String(1000))
 
     def get_id(self):
         return self.username
 
 class Door(datab.Model):
     __tablename__ = "door"
-    door_id = datab.Column(datab.Integer, primary_key=True)
-    serial_number = datab.Column(datab.String(50), nullable=False)
-    description = datab.Column(datab.String(1000), nullable=False)
+    door_id = datab.Column(datab.Integer)
+    door_name = datab.Column(datab.String(50))
+    serial_number = datab.Column(datab.String(50), primary_key=True)
+    category = datab.Column(datab.String(50))
+    description = datab.Column(datab.String(1000))
     company = datab.relationship("Company", back_populates="door")
     company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username')) 
     key = datab.relationship("Key", back_populates="door")
-    price = datab.Column(datab.Float, nullable=False)
-    interval = datab.Column(datab.String(10), datab.CheckConstraint("interval in ('hour', 'day', 'month', 'year')"), nullable=False)
-    image_url = datab.Column(datab.String(1000), nullable=False)
+    price = datab.Column(datab.Float)
+    interval = datab.Column(datab.String(10), datab.CheckConstraint("interval in ('hour', 'day', 'month', 'year')"))
+    image_url = datab.Column(datab.String(1000))
     posting_status = datab.Column(datab.String(50), 
     datab.CheckConstraint("posting_status in ('SALE', 'OUT_OF_STOCK', 'UNSOLD', 'WAITING_FOR_APPROVAL', 'REJECTED')"), 
     nullable=False)
