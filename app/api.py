@@ -1041,18 +1041,8 @@ class OrderAPI(API):
 		
 
 def main():
-	load_dotenv("../.env")
-	phonepass_id = os.environ.get("PHONEPASS_ID")
-	phonepass_pw = os.environ.get("PHONEPASS_PW")
-	phonepass_door = os.environ.get("PHONEPASS_DOOR")
-	steppay_key = os.environ.get("STEPPAY_SECRET_KEY")
-
-	c = CustomerAPI(steppay_key)
-	p = ProductAPI(steppay_key)
-	o = OrderAPI(steppay_key)
-	d = DoorAPI()
-	
-	# Start testing here
+	# Testing area
+	pass
 
 if __name__ == "__main__":
 	main()
