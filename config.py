@@ -9,3 +9,4 @@ class Config(object):
     FLASK_APP = os.environ.get('FLASK_APP') or 'application.py'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER')

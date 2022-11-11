@@ -1,9 +1,8 @@
 // set the modal menu element
-const edit = document.getElementById('editProductModal');
-const add = document.getElementById('addProductModal');
+var edit, add, editModal, addModal, addModal2;
 
 // options with default values
-const optionsModal = {
+optionsModalDoor = {
   placement: 'bottom-right',
   backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-50',
   onHide: () => {
@@ -17,12 +16,35 @@ const optionsModal = {
   }
 };
 
-const editModal = new Modal(edit, optionsModal);
-const addModal = new Modal(add, optionsModal);
-
-function toggleEditItem(){
+async function toggleEditItem(){
+    // Inject Modal
+    if (!$('#editProductModal').length){
+        await fetch('/dashboard_content/editProductModal')
+        .then(function(response){
+            return response.text();
+        }).then(function(html){
+            $(html).insertAfter("#productPage");
+            edit = document.getElementById('editProductModal');
+            editModal = new Modal(edit, optionsModalDoor);
+        });
+    }
     editModal.toggle();
 }
-function toggleAddItem(){
-    addModal.toggle();
+async function openAddItem(){
+    // Inject Modal
+    if (!$('#addProductModal').length){
+        await fetch('/dashboard_content/addProductModal')
+        .then(function(response){
+            return response.text();
+        }).then(function(html){
+            $(html).insertAfter("#productPage");
+            add = document.getElementById('addProductModal');
+            addModal = new Modal(add, optionsModalDoor);
+        });
+    }
+    addModal.show();
+}
+function closeAddItem(){
+    addModal.hide();
+    $("#addProductModal").remove();
 }

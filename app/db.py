@@ -19,8 +19,8 @@ class Company(UserMixin, datab.Model):
     password = datab.Column(datab.String(1000), nullable=False)
     address = datab.Column(datab.String(250), nullable=False)
     door = datab.relationship("Door", back_populates="company")
-    phonepass_id = datab.Column(datab.String(1000))
-    phonepass_pw = datab.Column(datab.String(1000))
+    phonepass_id = datab.Column(datab.BLOB(100000))
+    phonepass_pw = datab.Column(datab.BLOB(100000))
 
     def get_id(self):
         return self.username
@@ -44,7 +44,7 @@ class Door(datab.Model):
 
 class Key(datab.Model):
     __tablename__ = "key"
-    door_id = datab.Column(datab.Integer, datab.ForeignKey('door.door_id'), primary_key=True)
+    door_sn = datab.Column(datab.Integer, datab.ForeignKey('door.serial_number'), primary_key=True)
     door = datab.relationship("Door", back_populates="key")
     user_username = datab.Column(datab.String(250), datab.ForeignKey('user.username'), primary_key=True)
     user = datab.relationship("User", back_populates="key")
