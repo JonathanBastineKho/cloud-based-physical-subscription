@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{super()}}
+{% endblock head %}
+
+{% block body %}
+{% include "header.html" %}
+
+<h1 style="color: white; position: absolute; top: 50vh; left: 25vw;">
+	{{door_info}}
+</h1>
+
+{% endblock body %}
