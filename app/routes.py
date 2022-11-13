@@ -188,10 +188,11 @@ def index_content(content):
 def door():
     return render_template("product.html")
 
-@app.route("/access/<serial_number>", methods=["POST"])
+@app.route("/access", methods=["POST"])
 @user_only
-def access(serial_number):
+def access():
 	if request.method == "POST":
+		serial_number = request.form["serial_number"]
 		door = Door.query.filter_by(serial_number=serial_number).first()
 		if door == None:
 			return {"success": False, "message": f"Door {serial_number} not found."}
