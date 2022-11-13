@@ -896,7 +896,7 @@ class OrderAPI(API):
 			"customerCode": customerCode,
 			"items": [{
 				"currency": "SGD",
-				"minimumQuantity": 0,
+				"minimumQuantity": 1,
 				"productCode": productCode,
 				"priceCode": priceCode
 			}]

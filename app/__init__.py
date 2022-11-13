@@ -8,6 +8,7 @@ from app.api import DoorAPI, ProductAPI
 import os
 import rsa
 from dotenv import load_dotenv
+from flask_qrcode import QRcode
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
@@ -15,7 +16,7 @@ load_dotenv(os.path.join(basedir, '.env'))
 app = Flask(__name__)
 app.config.from_object(Config)
 datab = SQLAlchemy(app)
-
+QRcode(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 bcrypt = Bcrypt(app)
