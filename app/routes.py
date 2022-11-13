@@ -188,7 +188,7 @@ def index_content(content):
 def door():
     return render_template("product.html")
 
-@app.route("/access/<int:serial_number>")
+@app.route("/access/<serial_number>")
 @user_only
 def access(serial_number):
     door = Door.query.filter_by(serial_number=serial_number).first()
