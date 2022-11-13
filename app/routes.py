@@ -193,11 +193,11 @@ def door():
 def access(serial_number):
     door = Door.query.filter_by(serial_number=serial_number).first()
     if door == None:
-        return render_template("tester.html", door_info="DOOR NOT FOUND")
+        return render_template("tester.html", door_info="DOOR NOT FOUND", door_sn=serial_number)
 
     key = Key.query.filter_by(door_sn=door.serial_number, user_username=current_user.username).all()
     if len(key) == 0:
-        return render_template("tester.html", door_info=f"{current_user.username} HAS NO KEY FOR THIS DOOR {door.serial_number}")
+        return render_template("tester.html", door_info=f"{current_user.username} HAS NO KEY FOR THIS DOOR {door.serial_number}", door_sn=serial_number)
 
     now = datetime.date.today()
     for k in key:
@@ -206,5 +206,5 @@ def access(serial_number):
             phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
             phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
             result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
-            return render_template("tester.html", door_info= f"ACCESS GRANTED (STATUS: {result['result']})")
-    return render_template("tester.html", door_info="EXPIRED KEY")
+            return render_template("tester.html", door_info= f"ACCESS GRANTED (STATUS: {result['result']})", door_sn=serial_number)
+    return render_template("tester.html", door_info="EXPIRED KEY", door_sn=serial_number)
