@@ -23,6 +23,15 @@ def company_only(f):
             return redirect(url_for('complogin'))
     return decorated_function
 
+def user_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user.is_authenticated and session.get("user_type") == "individual":
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('login'))
+    return decorated_function
+
 @login_manager.user_loader
 def load_user(username):
     user_type = session["user_type"]
@@ -171,31 +180,31 @@ def content(content):
         return render_template(f"dashboardcomp/{content}.html", doors=doors)
     return render_template(f"dashboardcomp/{content}.html")
 
+@app.route("/index_content/<path:content>")
+def index_content(content):
+    return render_template(f"{content}.html")
+
 @app.route("/door")
 def door():
     return render_template("product.html")
 
-@app.route("/access/<serial_number>")
+@app.route("/access/<int:serial_number>")
+@user_only
 def access(serial_number):
-	user_type = session["user_type"]
-	if current_user.is_authenticated and user_type == "individual":
-		door = Door.query.filter_by(serial_number=serial_number).first()
-		if door == None:
-			return render_template("tester.html", door_info="DOOR NOT FOUND")
+    door = Door.query.filter_by(serial_number=serial_number).first()
+    if door == None:
+        return render_template("tester.html", door_info="DOOR NOT FOUND")
 
-		key = Key.query.filter_by(door_sn=door.serial_number, user_username=current_user.username).all()
-		if len(key) == 0:
-			return render_template("tester.html", door_info=f"{current_user.username} HAS NO KEY FOR THIS DOOR {door.serial_number}")
+    key = Key.query.filter_by(door_sn=door.serial_number, user_username=current_user.username).all()
+    if len(key) == 0:
+        return render_template("tester.html", door_info=f"{current_user.username} HAS NO KEY FOR THIS DOOR {door.serial_number}")
 
-		now = datetime.date.today()
-		for k in key:
-			if k.start_time <= now and k.end_time >= now:
-				company = Company.query.get(door.company_username)
-				phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
-				phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
-				result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
-				return render_template("tester.html", door_info= f"ACCESS GRANTED (STATUS: {result['result']})")
-		return render_template("tester.html", door_info="EXPIRED KEY")
-
-	else:
-		return render_template("tester.html", door_info="NOT A USER")
+    now = datetime.date.today()
+    for k in key:
+        if k.start_time <= now and k.end_time >= now:
+            company = Company.query.get(door.company_username)
+            phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
+            phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
+            result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
+            return render_template("tester.html", door_info= f"ACCESS GRANTED (STATUS: {result['result']})")
+    return render_template("tester.html", door_info="EXPIRED KEY")
