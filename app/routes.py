@@ -188,23 +188,23 @@ def index_content(content):
 def door():
     return render_template("product.html")
 
-@app.route("/access/<serial_number>")
+@app.route("/access/<serial_number>", methods=["POST"])
 @user_only
 def access(serial_number):
-    door = Door.query.filter_by(serial_number=serial_number).first()
-    if door == None:
-        return render_template("tester.html", door_info="DOOR NOT FOUND", door_sn=serial_number)
+	if request.method == "POST":
+		door = Door.query.filter_by(serial_number=serial_number).first()
+		if door == None:
+			return {"success": False, "message": f"Door {serial_number} not found."}
+		key = Key.query.filter_by(door_sn=door.serial_number, user_username=current_user.username).all()
+		if len(key) == 0:
+			return {"success": False, "message": f"User access denied."}
 
-    key = Key.query.filter_by(door_sn=door.serial_number, user_username=current_user.username).all()
-    if len(key) == 0:
-        return render_template("tester.html", door_info=f"{current_user.username} HAS NO KEY FOR THIS DOOR {door.serial_number}", door_sn=serial_number)
-
-    now = datetime.date.today()
-    for k in key:
-        if k.start_time <= now and k.end_time >= now:
-            company = Company.query.get(door.company_username)
-            phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
-            phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
-            result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
-            return render_template("tester.html", door_info= f"ACCESS GRANTED (STATUS: {result['result']})", door_sn=serial_number)
-    return render_template("tester.html", door_info="EXPIRED KEY", door_sn=serial_number)
+		now = datetime.date.today()
+		for k in key:
+			if k.start_time <= now and (k.end_time >= now or k.end_time == None):
+				company = Company.query.get(door.company_username)
+				phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
+				phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
+				result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
+				return {"success": True, "message": f"User access granted."}
+		return {"success": False, "message": f"User's key has expired."}
