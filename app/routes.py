@@ -42,7 +42,8 @@ def load_user(username):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    door = Door.query.all()
+    return render_template('index.html', doors=door)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -184,9 +185,10 @@ def content(content):
 def index_content(content):
     return render_template(f"{content}.html")
 
-@app.route("/door")
-def door():
-    return render_template("product.html")
+@app.route("/door/<int:door_id>")
+def door(door_id):
+    door = Door.query.filter_by(door_id=door_id).first()
+    return render_template("product.html", door=door)
 
 @app.route("/access", methods=["POST"])
 @user_only
