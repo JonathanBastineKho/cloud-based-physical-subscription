@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect
+from flask import render_template, url_for, request, redirect, jsonify
 from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import User, Company, Door, Key
@@ -195,10 +195,10 @@ def access():
 		serial_number = request.form["serial_number"]
 		door = Door.query.filter_by(serial_number=serial_number).first()
 		if door == None:
-			return {"success": False, "message": f"Door {serial_number} not found."}
+			return {"success": False, "message": f"Invalid Serial Number Please Try Again"}
 		key = Key.query.filter_by(door_sn=door.serial_number, user_username=current_user.username).all()
 		if len(key) == 0:
-			return {"success": False, "message": f"User access denied."}
+			return jsonify({"success": False, "message": f"User access denied."})
 
 		now = datetime.date.today()
 		for k in key:
@@ -208,4 +208,4 @@ def access():
 				phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 				result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
 				return {"success": True, "message": f"User access granted."}
-		return {"success": False, "message": f"User's key has expired."}
+		return jsonify({"success": False, "message": f"User's key has expired."})

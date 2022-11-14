@@ -1,7 +1,7 @@
 <div id="scanModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 w-full md:inset-0 h-modal md:h-full" style="z-index: 60;">
     <div class="relative p-4 w-full max-w-fit h-full md:h-auto">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700" id="scanModalContent">
             <!-- Modal header -->
             <div class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -14,11 +14,14 @@
             </div>
             <!-- Modal body -->
             <div class="p-6 space-y-6 text-center">
-                <div class="mx-auto w-72 h-auto bg-gray-500 rounded-lg" autoplay="true" id="scanQR">
-                </div>
-                <input type="text" name="door_id" id="door_id" class="mx-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-72 p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Enter Door ID" required>
-                <button type="submit" class="w-72 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Confirm</button>
+                <form action="{{ url_for('access') }}" method="POST" id="csrf" onsubmit="accessBtn(event);">
+                    <div class="mx-auto w-72 h-auto bg-gray-500 rounded-lg" autoplay="true" id="scanQR">
+                    </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" id="csrf_tok">
+                    <input type="text" name="serial_number" id="door_id" class="mt-4 mx-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-72 p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Enter Door ID" required>
+                    <button type="submit" class="mt-4 w-72 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Confirm</button>
+                </form>
             </div>
         </div>
     </div>
-</div> 
+</div>
