@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect
+from flask import render_template, url_for, request, redirect, jsonify
 from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import User, Company, Door, Key
@@ -42,7 +42,8 @@ def load_user(username):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    door = Door.query.all()
+    return render_template('index.html', doors=door)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -184,9 +185,10 @@ def content(content):
 def index_content(content):
     return render_template(f"{content}.html")
 
-@app.route("/door")
-def door():
-    return render_template("product.html")
+@app.route("/door/<int:door_id>")
+def door(door_id):
+    door = Door.query.filter_by(door_id=door_id).first()
+    return render_template("product.html", door=door)
 
 @app.route("/access", methods=["POST"])
 @user_only
@@ -195,10 +197,10 @@ def access():
 		serial_number = request.form["serial_number"]
 		door = Door.query.filter_by(serial_number=serial_number).first()
 		if door == None:
-			return {"success": False, "message": f"Door {serial_number} not found."}
+			return {"success": False, "message": f"Invalid Serial Number Please Try Again"}
 		key = Key.query.filter_by(door_sn=door.serial_number, user_username=current_user.username).all()
 		if len(key) == 0:
-			return {"success": False, "message": f"User access denied."}
+			return jsonify({"success": False, "message": f"User access denied."})
 
 		now = datetime.date.today()
 		for k in key:
@@ -208,4 +210,4 @@ def access():
 				phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 				result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
 				return {"success": True, "message": f"User access granted."}
-		return {"success": False, "message": f"User's key has expired."}
+		return jsonify({"success": False, "message": f"User's key has expired."})

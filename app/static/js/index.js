@@ -1,4 +1,14 @@
 var scanModal, html5QrCode;
+
+const isValidUrl = urlString=> {
+    try { 
+        return Boolean(new URL(urlString)); 
+    }
+    catch(e){ 
+        return false; 
+    }
+}
+
 optionsModalScan = {
     placement: 'center-center',
     backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-50',
@@ -29,13 +39,13 @@ async function openScanModal(){
             html5QrCode = new Html5Qrcode("scanQR");
             html5QrCode.start(
             cameraId, 
-            {
-                fps: 10   // Optional, frame per seconds for qr code scanning
-                // qrbox: { width: 250, height: 250 }  // Optional, if you want bounded box UI
-            },
+            {fps: 5},
             (decodedText, decodedResult) => {
-                // do something when code is read
-                console.log(decodedText);
+                var formData = new FormData();
+                formData.append("serial_number", decodedText);
+                formData.append("csrf_token", document.getElementById("csrf_tok").value)
+                submitData(formData);
+                return "";
             },
             (errorMessage) => {
                 // parse error, ignore it.
@@ -45,13 +55,47 @@ async function openScanModal(){
         }
     })
     .catch((err) => {
-        $("#scanQR").append("<p>permission denined</p>");
+        $("#scanQR").append("<p class='dark:text-white'>permission denined</p>");
     });
 }
 
 function closeScanModal(){
     scanModal.hide();
     html5QrCode.stop();
-    
     $("#scanModal").remove();
+}
+
+async function submitData(formData){
+    await fetch("/access", {
+        method : 'POST',
+        body : formData
+    }).then(function(res){
+        return res.json();
+    }).then(function(data){
+        if (!data.success){
+            fetch("/index_content/scanFail")
+            .then(function(res){
+                return res.text()
+            }).then(function(html){
+                $("#scanModalContent").empty();
+                $("#scanModalContent").append(html);
+                $("#scanMessage").text(`${data.message}`);
+            });
+        } else {
+            fetch("/index_content/scanSuccess")
+            .then(function(res){
+                return res.text()
+            }).then(function(html){
+                $("#scanModalContent").empty();
+                $("#scanModalContent").append(html);
+                $("#scanMessage").text(`${data.message}`);
+            });
+        }
+    });
+    html5QrCode.stop();
+}
+function accessBtn(event){
+    event.preventDefault();
+    var formData2 = new FormData(event.target);
+    submitData(formData2);
 }
