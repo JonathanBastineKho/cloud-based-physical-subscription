@@ -6,7 +6,8 @@ module.exports = {
       "./static/src/**/*.js",
       "./node_modules/flowbite/**/*.js",
       "./static/js/dashboard.js",
-      "./static/js/door.js"
+      "./static/js/door.js",
+	  "./static/js/key.js",
   ],
   theme: {
     extend: {},

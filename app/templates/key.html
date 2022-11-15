@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{super()}}
+{% endblock head %}
+{% block body %}
+{% include "header.html" %}
+<div class="mt-16 px-5 md:px-20 pt-7 md:pt-8 bg-white dark:bg-gray-900 h-screen" id="productPage">
+	<h1 class="text-2xl font-bold dark:text-white mb-4">All keys</h1>
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+		<div id="table-div" class="md:col-span-2">
+			<table id="keys-table">
+				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+					<tr>
+						<th scope="col" class="py-3 px-6">
+							Product name
+						</th>
+						<th scope="col" class="py-3 px-6">
+							Company
+						</th>
+						<th scope="col" class="py-3 px-6">
+							Category
+						</th>
+						<th scope="col" class="py-3 px-6">
+							Start date
+						</th>
+						<th scope="col" class="py-3 px-6">
+							Interval
+						</th>
+						<th scope="col" class="py-3 px-6">
+							Status
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% if keys|length > 0 %}
+					{% for key in keys %}
+					{% if key['status'] %}
+					<tr class="bg-white dark:bg-gray-800">
+						<th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+							{{ key['product_name'] }}
+						</th>
+						<td class="py-4 px-6">
+							{{ key['company'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['category'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['start_date'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['interval'] }}
+						</td>
+						<td class=" flex py-4 px-6">
+							<button onclick="" type="button" class="flex focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+								<svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> 
+								Stop subscription
+							</button>
+						</td>
+					</tr>
+					{% else %}
+					<tr class="bg-white dark:bg-gray-800">
+						<th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+							{{ key['product_name'] }}
+						</th>
+						<td class="py-4 px-6">
+							{{ key['company'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['category'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['start_date'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['interval'] }}
+						</td>
+						<td class=" flex py-4 px-6">
+							Expired on {{ key['end_time'] }}
+						</td>
+					</tr>
+					{% endif %}
+					{% endfor %}
+					{% else %}
+					<tr class="bg-white dark:bg-gray-800">
+						<td class="py-4 px-6 text-center" colspan="6">No keys</td>
+					</tr>
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/key.js')}}"></script>
+{% endblock body %}

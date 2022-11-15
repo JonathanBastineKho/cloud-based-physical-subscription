@@ -13,7 +13,6 @@ class API(ABC):
 # Door API
 class DoorAPI(API):
 	# Class attributes
-	__test_server = "https://nokeyoneoffi.com/phonepass"
 	__op_server = "https://ppass.co.kr/phonepass"
 
 	def __init__(self) -> None:

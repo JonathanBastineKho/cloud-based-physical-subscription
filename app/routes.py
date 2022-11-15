@@ -211,3 +211,24 @@ def access():
 				result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
 				return {"success": True, "message": f"User access granted."}
 		return jsonify({"success": False, "message": f"User's key has expired."})
+
+@app.route("/key")
+@user_only
+def key():
+	keys = Key.query.filter_by(user_username=current_user.username).all()
+	key_data = []
+	now = datetime.date.today()
+	for k in keys:
+		door = Door.query.get(k.door_sn)
+		company = Company.query.get(door.company_username)
+		key_data.append({
+			"product_name": door.door_name,
+			"company": company.username,
+			"category": door.category,
+			"start_date":k.start_time,
+			"interval": door.interval,
+			"status": k.end_time == None or k.end_time >= now,
+			"end_time": k.end_time,
+			"product_desc": door.description
+		})
+	return render_template("key.html", keys=key_data)
