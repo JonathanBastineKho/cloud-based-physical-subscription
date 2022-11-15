@@ -135,3 +135,4 @@ test.py
 app/static/img/uploads/
 privatekey.pem
 publickey.pem
+app/node_modules/
