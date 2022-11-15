@@ -34,7 +34,7 @@
         {% for door in doors %}
         <div class="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
             <a href="{{ url_for('door', door_id=door.door_id) }}">
-                <img class="mb-8 rounded-t-lg" src="{{ door.image_url }}" alt="product image" />
+                <img class="mb-8 rounded-t-lg object-fill w-full h-64" src="{{ door.image_url }}" alt="product image" />
             </a>
             <div class="px-5 pb-5">
                 <a href="#">
