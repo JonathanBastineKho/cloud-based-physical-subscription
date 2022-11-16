@@ -926,30 +926,6 @@ class OrderAPI(API):
 			headers=header,
 		)
 
-	def __request_payment(self, orderCode:str, successURL:str=None, errorURL:str=None, cancelURL:str=None) -> requests.Response:
-		"""
-		Requests the payment redirection of a specified order using GET Method.
-
-		Parameters:
-		- orderCode(str) = Order code.
-		
-		Optional Parameters:
-		- successURL(str) = URL to be redirected to when payment is successful. Defaults to blank.
-		- errorURL(str) = URL to be redirected to if payment fails. Defaults to blank.
-		- cancelURL(str) = URL to be redirected to if the payment is canceled. Defaults to blank.
-
-		Returns a request Response
-		"""
-		header = {
-			"accept": "*/*",
-			"Secret-Token": self.__token
-		}
-
-		return requests.get(
-			url=self.get_payment_url(orderCode, successURL, errorURL, cancelURL),
-			headers=header,
-		)
-
 	def create(self, customerID:int, productCode:str, priceCode:str) -> dict:
 		"""
 		Creates a new order.
@@ -998,7 +974,7 @@ class OrderAPI(API):
 
 		Returns a string containing the payment URL.
 		"""	
-		url = f"{self.__server}/orders/{orderCode}/pay"
+		url = f"https://api.steppay.kr/api/public/orders/{orderCode}/pay"
 
 		list_of_urls = []
 		if successURL != None:
@@ -1012,29 +988,6 @@ class OrderAPI(API):
 			url += ("?" + "&".join(list_of_urls))
 		
 		return url
-
-	def redirect_to_payment(self, orderCode:str, successURL:str=None, errorURL:str=None, cancelURL:str=None) -> str:
-		"""
-		Redirects to the payment gateway of a specified order.
-		Redirection is done through the returning of a HTML template string, 
-		and can be rendered with flask's `render_template_string`
-
-		Parameters:
-		- orderCode(str) = Order code.
-		
-		Optional Parameters:
-		- successURL(str) = URL to be redirected to when payment is successful. Defaults to blank.
-		- errorURL(str) = URL to be redirected to if payment fails. Defaults to blank.
-		- cancelURL(str) = URL to be redirected to if the payment is canceled. Defaults to blank.
-
-		Returns a dictionary with keys:
-			"success": (bool) True if everything went through perfectly without any issues.
-			"message": (str) success message (details about success or errors).
-		"""	
-		res = self.__request_payment(orderCode, successURL, errorURL, cancelURL)
-		if res.status_code != 200:
-			return {"success": False, "message": f"<{res.status_code}> Failed to redirect to Order {orderCode}'s payment url."}
-		return {"success": True,  "message": res.text}
 		
 
 def main():
