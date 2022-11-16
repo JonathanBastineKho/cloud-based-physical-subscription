@@ -875,12 +875,12 @@ class OrderAPI(API):
 		"""
 		print(f"TOKEN = {self.__token}")
 	
-	def __request_create(self, customerCode:str, productCode:str, priceCode:str) -> requests.Response:
+	def __request_create(self, customerID:int, productCode:str, priceCode:str) -> requests.Response:
 		"""
 		Requests the creation of a new order using POST Method.
 
 		Parameters:
-		- customerCode(str) = Customer Code.
+		- customerID(int) = Customer ID.
 		- productCode(str) = Product Code.
 		- priceCode(str) = Price Plan Code.
 
@@ -892,7 +892,7 @@ class OrderAPI(API):
 			"Secret-Token": self.__token
 		}
 		param_data = {
-			"customerCode": customerCode,
+			"customerId": customerID,
 			"items": [{
 				"currency": "SGD",
 				"minimumQuantity": 1,
@@ -950,12 +950,12 @@ class OrderAPI(API):
 			headers=header,
 		)
 
-	def create(self, customerCode:str, productCode:str, priceCode:str) -> dict:
+	def create(self, customerID:int, productCode:str, priceCode:str) -> dict:
 		"""
 		Creates a new order.
 
 		Parameters:
-		- customerCode(str) = Customer Code.
+		- customerID(int) = Customer ID.
 		- productCode(str) = Product Code.
 		- priceCode(str) = Price Plan Code.
 
@@ -963,9 +963,9 @@ class OrderAPI(API):
 			"success": (bool) True if everything went through perfectly without any issues.
 			"message": (str) success message (details about success or errors).
 		"""
-		res = self.__request_create(customerCode, productCode, priceCode)
+		res = self.__request_create(customerID, productCode, priceCode)
 		if res.status_code != 200:
-			return {"success": False, "message": f"<{res.status_code}> Failed to create order for customer({customerCode}), product({productCode}), price({priceCode})."}
+			return {"success": False, "message": f"<{res.status_code}> Failed to create order for customer({customerID}), product({productCode}), price({priceCode})."}
 		return {"success": True,  "message": json.loads(res.text)}
 
 	def info(self, orderCode:str) -> dict:
