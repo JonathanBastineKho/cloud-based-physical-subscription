@@ -27,12 +27,9 @@
             <div class="flex">
                 <div class="flex mb-5 w-40">
                     <input type="number" id="price" class="rounded-none rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-10 text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1">
-                    <select id="countries" class="w-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option>Hour</option>
-                        <option>Day</option>
-                        <option>Month</option>
-                        <option>Year</option>
-                    </select>
+                    <span class="text-gray-500 dark:text-gray-400 w-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        {{ door.interval }}
+                    </span>
                 </div>
                 <div class="relative ml-4 w-36">
                     <div class="flex absolute top-3 left-0 items-center pl-3 pointer-events-none">

@@ -1,5 +1,5 @@
 from flask import render_template, url_for, request, redirect, jsonify
-from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey
+from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import User, Company, Door, Key
 from flask import session
@@ -60,6 +60,7 @@ def register():
             datab.session.commit()
             session['user_type'] = 'individual'
             login_user(user)
+            customer_api.create(name=username, email=email, phone=phone_number)
             return redirect(url_for('index'))
     return render_template('register.html')
 
