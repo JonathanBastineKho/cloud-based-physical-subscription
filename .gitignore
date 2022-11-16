@@ -135,4 +135,9 @@ test.py
 app/static/img/uploads/
 privatekey.pem
 publickey.pem
+
+# Tailwind
 app/node_modules/
+app/static/dist/css/output.css
+app/package-lock.json
+app/package.json
