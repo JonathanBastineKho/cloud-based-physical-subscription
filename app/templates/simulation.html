@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <center>
+        <table style="color:white;border: 1px;" >
+            <tr>
+                <th colspan="2">
+                    <h1>
+                        DOOR
+                    </h1>
+                </th>
+            </tr>
+            <tr>        
+                <td align="center">
+                    <h3>
+                        QR CODE<br \>
+                        Unlock / Lock
+                    </h3>
+                </td>
+                <td align="center">
+                    <h3>
+                        Door
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    {{ qrcode(serial_num) }}
+                </td>
+                <td align="center">
+                    <img id="doorIMG" src="../static/img/closeDoor.png" alt="Closed Door" width = 100px>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" colspan="2">
+                    <h3>Status</h3>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" colspan="2">
+                    <h3 id="status">{{door_info}}</h3>
+                </td>
+            </tr>
+        </table>
+    </center>
+</div>
+<script src="{{ url_for('static', filename='js/simulation.js') }}" async></script>
+{% endblock body %}
