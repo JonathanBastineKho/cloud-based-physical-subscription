@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from app.api import DoorAPI, ProductAPI, CustomerAPI, OrderAPI
+from app.api import DoorAPI, ProductAPI, CustomerAPI, OrderAPI, SubscriptionAPI
 import os
 import rsa
 from dotenv import load_dotenv
@@ -38,6 +38,7 @@ door_api = DoorAPI()
 product_api = ProductAPI(token=os.environ.get('STEPPAY_SECRET_KEY'))
 customer_api = CustomerAPI(token=os.environ.get('STEPPAY_SECRET_KEY'))
 order_api = OrderAPI(token=os.environ.get('STEPPAY_SECRET_KEY'))
+subscription_api = SubscriptionAPI(token=os.environ.get('STEPPAY_SECRET_KEY'))
 
 print(app.root_path)
 

@@ -988,7 +988,110 @@ class OrderAPI(API):
 			url += ("?" + "&".join(list_of_urls))
 		
 		return url
+
+# Subscription API
+class SubscriptionAPI(API):
+	# Class attributes
+	__server = "https://api.steppay.kr/api/v1"
+
+	def __init__(self, token:str) -> None:
+		"""
+		Initialize a SubscriptionAPI instance object.
+
+		Parameters:
+		- token(str) = secret token for STEPPAY API.
+		"""
+
+		# Instance attributes
+		self.__token = token
+	
+	def print_api_key(self):
+		"""
+		Prints out the API keys used in the constructor. (FOR DEBUG PURPSOSES)
+		"""
+		print(f"TOKEN = {self.__token}")
 		
+	def __request_info(self, subscriptionID:int) -> requests.Response:
+		"""
+		Requests the information of a specified subscription using GET Method.
+
+		Parameters:
+		- subscriptionID(int) = Subscription ID.
+		
+		Returns a request Response
+		"""
+		header = {
+			"accept": "*/*",
+			"Secret-Token": self.__token
+		}
+
+		return requests.get(
+			url=f"{self.__server}/subscriptions/{subscriptionID}",
+			headers=header,
+		)
+	
+	def __request_cancel(self, subscriptionID:int, when:str, specific_date:str) -> requests.Response:
+		"""
+		Requests the cancellation of a specified subscription using POST Method.
+
+		Parameters:
+		- subscriptionID(int) = Subscription ID.
+		- when(str) = When to cancel, either ["NOW", "END_OF_PERIOD", "SPECIFIC_DATE_TIME"].
+		- specific_date(str) = Specific date time. Only required if when == "SPECIFIC_DATE_TIME".
+
+		Returns a request Response
+		"""
+		header = {
+			"accept": "*/*",
+			"Secret-Token": self.__token
+		}
+
+		param_data = {
+			"whenToCancel": when,
+		}
+
+		if when == "SPECIFIC_DATE_TIME":
+			param_data["when"] = specific_date
+
+		return requests.post(
+			url=f"{self.__server}/subscriptions/{subscriptionID}/cancel",
+			headers=header,
+			json=param_data
+		)
+	
+	def check_status(self, subscriptionID:int) -> dict:
+		"""
+		Retrieves the status of a specified subscription.
+
+		Parameters:
+		- subscriptionID(int) = Subscription ID.
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""
+		res = self.__request_info(subscriptionID)
+		if res.status_code != 200:
+			return {"success": False, "message": f"<{res.status_code}> Failed to retrieve subscription {subscriptionID}'s status."}
+		return {"success": True,  "message": json.loads(res.text)["status"]}
+	
+	def cancel(self, subscriptionID:int, when="NOW", specific_date=None) -> dict:
+		"""
+		Cancels a specified subscription.
+
+		Parameters:
+		- subscriptionID(int) = Subscription ID.
+		- when(str) = When to cancel, either ["NOW", "END_OF_PERIOD", "SPECIFIC_DATE_TIME"]. Defaults to "NOW".
+		- specific_date(str) = Specific date time. Only required if when == "SPECIFIC_DATE_TIME".
+
+		Returns a dictionary with keys:
+			"success": (bool) True if everything went through perfectly without any issues.
+			"message": (str) success message (details about success or errors).
+		"""
+		res = self.__request_cancel(subscriptionID, when, specific_date)
+		if res.status_code != 200:
+			return {"success": False, "message": f"<{res.status_code}> Failed to cancel subscription {subscriptionID}."}
+		return {"success": True,  "message": f"Successfully cancelled subscription {subscriptionID}."}
 
 def main():
 	# Testing area
