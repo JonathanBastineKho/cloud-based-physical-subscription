@@ -1,5 +1,5 @@
 from flask import render_template, url_for, request, redirect, jsonify
-from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api
+from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api, order_api
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import User, Company, Door, Key
 from flask import session
@@ -52,15 +52,17 @@ def register():
         username = request.form["username"]
         phone_number = request.form["phonenumber"]
         if User.query.filter_by(email=email).first() == None and User.query.filter_by(username=username).first() == None and User.query.filter_by(phone_number=phone_number):
+            res = customer_api.create(name=username, email=email, phone=phone_number)
+            customer_id = res["message"]["id"]
             user = User(username=username,
             email=email, 
             password=bcrypt.generate_password_hash(request.form["password"], 13, prefix=b"2b"),
-            phone_number=phone_number)
+            phone_number=phone_number,
+            customer_id=customer_id)
             datab.session.add(user)
             datab.session.commit()
             session['user_type'] = 'individual'
             login_user(user)
-            customer_api.create(name=username, email=email, phone=phone_number)
             return redirect(url_for('index'))
     return render_template('register.html')
 
@@ -112,7 +114,7 @@ def logout():
 @company_only
 def dashboard():
     if request.method == "POST":
-        if request.form["form_type"] == "add_product":
+        if request.form["form_type"] == "add_product" and current_user.phonepass_id != None and current_user.phonepass_pw != None:
             file = request.files['file']
             interval = request.form["interval"]
             product_name = request.form["product_name"]
@@ -233,3 +235,12 @@ def key():
 			"product_desc": door.description
 		})
 	return render_template("key.html", keys=key_data)
+
+@app.route("/subscribe", methods=["POST"])
+@user_only
+def subscribe():
+    pass
+
+@app.route("/finishPayment", methods=["POST"])
+def finishPayment():
+    pass

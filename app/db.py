@@ -5,6 +5,7 @@ class User(UserMixin, datab.Model):
     __tablename__ = "user"
     username = datab.Column(datab.String(250), primary_key=True)
     email = datab.Column(datab.String(250), nullable=False, unique=True)
+    customer_id = datab.Column(datab.Integer, nullable=False, unique=True)
     password = datab.Column(datab.String(1000), nullable=False)
     phone_number = datab.Column(datab.String(24), nullable=False)
     key = datab.relationship("Key", back_populates="user")
