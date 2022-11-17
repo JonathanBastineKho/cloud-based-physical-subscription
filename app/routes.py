@@ -53,17 +53,18 @@ def register():
         phone_number = request.form["phonenumber"]
         if User.query.filter_by(email=email).first() == None and User.query.filter_by(username=username).first() == None and User.query.filter_by(phone_number=phone_number):
             res = customer_api.create(name=username, email=email, phone=phone_number)
-            customer_id = res["message"]["id"]
-            user = User(username=username,
-            email=email, 
-            password=bcrypt.generate_password_hash(request.form["password"], 13, prefix=b"2b"),
-            phone_number=phone_number,
-            customer_id=customer_id)
-            datab.session.add(user)
-            datab.session.commit()
-            session['user_type'] = 'individual'
-            login_user(user)
-            return redirect(url_for('index'))
+            if res["success"]:
+                customer_id = res["message"]["id"]
+                user = User(username=username,
+                email=email, 
+                password=bcrypt.generate_password_hash(request.form["password"], 13, prefix=b"2b"),
+                phone_number=phone_number,
+                customer_id=customer_id)
+                datab.session.add(user)
+                datab.session.commit()
+                session['user_type'] = 'individual'
+                login_user(user)
+                return redirect(url_for('index'))
     return render_template('register.html')
 
 @app.route("/login", methods=["GET", "POST"])
