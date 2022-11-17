@@ -29,6 +29,7 @@ class Company(UserMixin, datab.Model):
 class Door(datab.Model):
     __tablename__ = "door"
     door_id = datab.Column(datab.Integer)
+    product_code = datab.Column(datab.String(250), nullable=False)
     door_name = datab.Column(datab.String(50))
     serial_number = datab.Column(datab.String(50), primary_key=True)
     category = datab.Column(datab.String(50))
@@ -37,6 +38,7 @@ class Door(datab.Model):
     company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username')) 
     key = datab.relationship("Key", back_populates="door")
     price = datab.Column(datab.Float)
+    price_code = datab.Column(datab.String(250), nullable=False)
     interval = datab.Column(datab.String(10), datab.CheckConstraint("interval in ('hour', 'day', 'month', 'year')"))
     image_url = datab.Column(datab.String(1000))
     posting_status = datab.Column(datab.String(50), 

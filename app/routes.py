@@ -125,7 +125,6 @@ def dashboard():
             result_door = door_api.check_status(doorID=serial_number, 
             id=rsa.decrypt(current_user.phonepass_id, privateKey).decode('utf8'),
             password=rsa.decrypt(current_user.phonepass_pw, privateKey).decode('utf8'))
-
             if result_door["success"] and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename) # might be different for other OS
@@ -161,7 +160,9 @@ def dashboard():
                             price=price,
                             interval=interval,
                             image_url=image_url,
-                            posting_status='SALE'
+                            posting_status='SALE',
+                            product_code=result["message"]["code"],
+                            price_code=result["message"]["prices"]["code"]
                         )
                     )
                     datab.session.commit()
@@ -239,8 +240,50 @@ def key():
 @app.route("/subscribe", methods=["POST"])
 @user_only
 def subscribe():
-    pass
+    door_id = request.form["door_id"]
+    door = Door.query.filter_by(door_id=door_id).first()
+    result = order_api.create(
+        customerID=current_user.customer_id,
+        productCode=door.product_code,
+        priceCode=door.price_code
+    )
+    if result["success"]:
+        print(result)
+        order_code = result["message"]["orderCode"]
+        return f"https://api.steppay.kr/api/public/orders/{order_code}/pay?successUrl=https://your-site.com&errorUrl=https://your-site.com&cancelUrl=https://your-site.com"
 
-@app.route("/finishPayment", methods=["POST"])
+@app.route("/finishPayment-add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a3f6d70f1b02b67fee7150bb364d72b8f87951ab0cf25016e27c909a23f539cb54de1299d1fb1a577d39a40941e2ba2a78e7ebf0d11b5c180fcd5f0173adcc8201b363739a2e025bcfcdbbd2c2cd538be640691fb944290f599583f432e74a1be71bb014cd1e32b38df69272718d9b7674a2c376072178e2431395081b27e72f13040d136e548c6430359f14cd99af33f2bf64c7fb8f96cf0d26be1d2225c728c9630376ed0aafa7aa7b77c2ae30b1dcd788354ce685b5aaa3f03727c5155be3422ded23801ac47a34d7c079685f50e81ed2f6cf240a45bcc399c5c31ce6dd5738e221f19a76d4f41ff8bac489e4c07456382cceedc5a453255b86128f83b5c73275eefb142ba115", methods=["POST"])
 def finishPayment():
     pass
+
+@app.route("/test-webhook", methods=["POST"])
+def test_webhook():
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
+    print("test")
