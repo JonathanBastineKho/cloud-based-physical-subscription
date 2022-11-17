@@ -288,3 +288,15 @@ def test_webhook():
     print("test")
     print("test")
     print("test")
+
+@app.route("/simulation/<serial_number>")
+@company_only
+def simulation(serial_number):
+    serial_number = serial_number
+    door = Door.query.filter_by(serial_number=serial_number,company_username=current_user.username).first()
+    phonepass_id = rsa.decrypt(current_user.phonepass_id, privateKey)
+    phonepass_pw = rsa.decrypt(current_user.phonepass_pw, privateKey)
+    if door != None:
+        simulateDoor = door_api.check_status(doorID=serial_number, id=phonepass_id, password=phonepass_pw)
+        return render_template("simulation.html", door_info=simulateDoor["result"], serial_num = serial_number)
+    return render_template("simulation.html", door_info="Error, door not found", serial_num = serial_number)

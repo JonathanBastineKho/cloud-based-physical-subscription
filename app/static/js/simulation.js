@@ -21,7 +21,7 @@ function checkDoor(status)
     }
 }
 
-window.setInterval('refresh()', 5000); 
+window.setInterval('refresh()', 30000); 
 function refresh() {
     window .location.reload();
 }
