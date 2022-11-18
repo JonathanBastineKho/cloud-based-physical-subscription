@@ -61,3 +61,26 @@ function styleTableInfo() {
 	$("#keys-table_paginate > span > a").addClass("py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white");
 	$("#keys-table_next").addClass("block py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white");
 }
+
+async function cancelSubscription(formData) {
+	await fetch('/key', {
+		method : 'POST',
+		body : formData
+	}).then(function(res){
+		return res.json();
+	}).then(function(data){
+		$("#subscription-cancel-alert_text").text(data.message);
+		$("#subscription-cancel-alert").removeClass("hidden");
+	})
+}
+
+function cancelBtn(event){
+    event.preventDefault();
+    var formData2 = new FormData(event.target);
+    cancelSubscription(formData2);
+}
+
+function hideToast(){
+	$("#subscription-cancel-alert").addClass("hidden");
+	window.location.reload();
+}

@@ -49,12 +49,12 @@ class Door(datab.Model):
 class Key(datab.Model):
 	__tablename__ = "key"
 	key_id = datab.Column(datab.Integer, nullable=False, primary_key=True)
-	door_sn = datab.Column(datab.Integer, datab.ForeignKey('door.serial_number'), unique=True)
+	door_sn = datab.Column(datab.Integer, datab.ForeignKey('door.serial_number'), nullable=False)
 	door = datab.relationship("Door", back_populates="key")
-	user_username = datab.Column(datab.String(250), datab.ForeignKey('user.username'), unique=True)
+	user_username = datab.Column(datab.String(250), datab.ForeignKey('user.username'))
 	user = datab.relationship("User", back_populates="key")
-	start_time = datab.Column(datab.Date, unique=True)
-	end_time = datab.Column(datab.Date, nullable=False)
+	start_time = datab.Column(datab.Date, nullable=False)
+	end_time = datab.Column(datab.Date)
 	duration = datab.column_property(start_time - end_time)
 
 class Sale(datab.Model):

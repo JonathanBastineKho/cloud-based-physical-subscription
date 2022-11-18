@@ -14,7 +14,7 @@
             </div>
             <!-- Modal body -->
             <div class="p-6 space-y-6 text-center">
-                <form action="{{ url_for('access') }}" method="POST" id="csrf" onsubmit="accessBtn(event);">
+                <form action="" method="POST" id="csrf" onsubmit="accessBtn(event);">
                     <div class="mx-auto w-72 h-auto bg-gray-500 rounded-lg" autoplay="true" id="scanQR">
                     </div>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" id="csrf_tok">
