@@ -1,5 +1,5 @@
 from flask import render_template, url_for, request, redirect, jsonify
-from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api, order_api, subscription_api
+from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api, order_api, subscription_api, csrf
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import User, Company, Door, Key
 from flask import session
@@ -261,41 +261,25 @@ def subscribe():
         order_code = result["message"]["orderCode"]
         return order_api.get_payment_url(order_code,successURL="", errorURL="", cancelURL="")
 
-@app.route("/finishPayment-add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a3f6d70f1b02b67fee7150bb364d72b8f87951ab0cf25016e27c909a23f539cb54de1299d1fb1a577d39a40941e2ba2a78e7ebf0d11b5c180fcd5f0173adcc8201b363739a2e025bcfcdbbd2c2cd538be640691fb944290f599583f432e74a1be71bb014cd1e32b38df69272718d9b7674a2c376072178e2431395081b27e72f13040d136e548c6430359f14cd99af33f2bf64c7fb8f96cf0d26be1d2225c728c9630376ed0aafa7aa7b77c2ae30b1dcd788354ce685b5aaa3f03727c5155be3422ded23801ac47a34d7c079685f50e81ed2f6cf240a45bcc399c5c31ce6dd5738e221f19a76d4f41ff8bac489e4c07456382cceedc5a453255b86128f83b5c73275eefb142ba115", methods=["POST"])
-def finishPayment():
-    pass
-
-@app.route("/test-webhook", methods=["POST"])
-def test_webhook():
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
-    print("test")
+@app.route("/finishSubscribe-add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a", methods=["POST"])
+@csrf.exempt
+def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a():
+    content = request.json
+    result = subscription_api.check_status(content["id"])
+    if result["success"] and content["status"] == "ACTIVE":
+        door = Door.query.filter_by(door_id=result["message"]["door_id"]).first()
+        user = User.query.filter_by(customer_id=result["message"]["customer_id"]).first()
+        datab.session.add(
+            Key(
+                key_id=result["message"]["subscription_id"],
+                door_sn=door.serial_number,
+                user_username=user.username,
+                start_time=result["message"]["start_time"]
+            )
+        )
+        datab.session.commit()
+        return jsonify({'success':True})
+    return jsonify({'success':False})
 
 @app.route("/simulation/<serial_number>")
 @company_only
