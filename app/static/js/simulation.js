@@ -14,14 +14,19 @@ function checkDoor(status)
         image.src="../static/img/closeDoor.png";
         image.alt="Door Closed";
     }
+    else if (status == "Error")
+    {   
+        image.src="../static/img/closeDoor.png";
+        image.alt="Error";
+    }
     else
     {
-        image.src="";
+        image.src="../static/img/closeDoor.png";
         image.alt="Door Not Found";
     }
 }
 
-window.setInterval('refresh()', 30000); 
+// window.setInterval('refresh()', 30000); 
 function refresh() {
     window .location.reload();
 }

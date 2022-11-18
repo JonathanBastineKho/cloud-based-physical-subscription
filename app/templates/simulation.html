@@ -2,7 +2,7 @@
 {% block body %}
 <div>
     <center>
-        <table style="color:white;" border = "1">
+        <table class="dark:text-white" border = "1">
             <tr>
                 <th colspan="2">
                     <h1>
@@ -11,13 +11,13 @@
                 </th>
             </tr>
             <tr>        
-                <td align="center">
+                <td align="center" width = "50%">
                     <h3>
-                        QR CODE<br \>
+                        QR CODE<br>
                         Unlock / Lock
                     </h3>
                 </td>
-                <td align="center">
+                <td align="center" width = "50%">
                     <h3>
                         Door
                     </h3>
@@ -25,10 +25,10 @@
             </tr>
             <tr>
                 <td align="center">
-                    {{ qrcode(serial_num) }}
+                    <img src = "{{ qrcode(serial_num) }}" alt = QRCODE>
                 </td>
                 <td align="center">
-                    <img id="doorIMG" src="../static/img/closeDoor.png" alt="Closed Door" width = 100px>
+                    <img id="doorIMG" src="../static/img/closeDoor.png" alt="Door not found" width = 100px>
                 </td>
             </tr>
             <tr>
