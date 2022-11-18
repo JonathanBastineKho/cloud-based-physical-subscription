@@ -293,20 +293,21 @@ def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf
 	if result["success"]:
 		# When creating new subscription
 		if content["status"] == "ACTIVE":
+			start_date = datetime.datetime.strptime(result["message"]["start_date"], "%Y-%m-%d").date
 			door = Door.query.filter_by(door_id=result["message"]["door_id"]).first()
 			datab.session.add(
 				Key(
 					key_id=content["id"],
 					door_sn=door.serial_number,
 					user_username=result["message"]["customer_username"],
-					start_time=result["message"]["start_date"]
+					start_time=start_date
 				)
 			)
 			datab.session.add(
 				Sale(
 					company_username=door.company_username,
 					value=result["message"]["total_price"],
-					date=result["message"]["start_date"]
+					date=start_date
 				)
 			)
 			datab.session.commit()
@@ -315,7 +316,7 @@ def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf
 		# When cancelled/pending cancel
 		else:
 			key = Key.query.get(content["id"])
-			key.end_time = result["message"]["end_date"]
+			key.end_time = datetime.datetime.strptime(result["message"]["end_date"], "%Y-%m-%d").date
 			datab.session.commit()
 			return jsonify({'success':True})
 
