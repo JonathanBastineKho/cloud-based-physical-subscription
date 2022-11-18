@@ -251,7 +251,15 @@ def key():
 		else:
 			data["status"] = "CANCELLED"
 		key_data.append(data)
-	return render_template("key.html", keys=key_data, )
+	return render_template("key.html", keys=key_data)
+
+@app.route("/key/<int:key_id>/cancel", method="POST")
+@user_only
+def cancel_subscription(key_id:int):
+	cancel = subscription_api.cancel(key_id, when="END_OF_PERIOD")
+	if cancel["success"]:
+		return jsonify({"success": True, "message": "Successfully cancelled subscription."})
+	return jsonify({"success": False, "message": "Error! Failed to cancel subscription."})
 
 @app.route("/subscribe", methods=["POST"])
 @user_only
