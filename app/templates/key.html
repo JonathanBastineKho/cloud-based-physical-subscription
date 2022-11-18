@@ -35,7 +35,7 @@
 				<tbody>
 					{% if keys|length > 0 %}
 					{% for key in keys %}
-					{% if key['status'] %}
+					{% if key['status'] == "ACTIVE" %}
 					<tr class="bg-white dark:bg-gray-800">
 						<th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
 							{{ key['product_name'] }}
@@ -59,6 +59,29 @@
 							</button>
 						</td>
 					</tr>
+
+					{% elif key['status'] == "PENDING_CANCEL" %}
+					<tr class="bg-white dark:bg-gray-800">
+						<th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+							{{ key['product_name'] }}
+						</th>
+						<td class="py-4 px-6">
+							{{ key['company'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['category'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['start_date'] }}
+						</td>
+						<td class="py-4 px-6">
+							{{ key['interval'] }}
+						</td>
+						<td class="flex py-4 px-6 text-green-400">
+							Expires on {{ key['end_time'] }}
+						</td>
+					</tr>
+
 					{% else %}
 					<tr class="bg-white dark:bg-gray-800">
 						<th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -85,6 +108,11 @@
 					{% else %}
 					<tr class="bg-white dark:bg-gray-800">
 						<td class="py-4 px-6 text-center" colspan="6">No keys</td>
+						<td style="display: none;"></td>
+						<td style="display: none;"></td>
+						<td style="display: none;"></td>
+						<td style="display: none;"></td>
+						<td style="display: none;"></td>
 					</tr>
 					{% endif %}
 				</tbody>

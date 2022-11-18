@@ -216,8 +216,8 @@ def access():
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
 					return jsonify({"success": True, "message": f"User access granted."})
-				status = subscription_api.check_status(key.key_id)
-				if k.end_time == None and status["success"] and status["message"] == "ACTIVE":
+				status = subscription_api.info(key.key_id)
+				if k.end_time == None and status["success"] and status["message"]["status"] == "ACTIVE":
 					company = Company.query.get(door.company_username)
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
@@ -234,7 +234,7 @@ def key():
 	for k in keys:
 		door = Door.query.get(k.door_sn)
 		company = Company.query.get(door.company_username)
-		key_data.append({
+		data = {
 			"product_name": door.door_name,
 			"company": company.username,
 			"category": door.category,
@@ -243,8 +243,15 @@ def key():
 			"status": k.end_time == None or k.end_time >= now,
 			"end_time": k.end_time,
 			"product_desc": door.description
-		})
-	return render_template("key.html", keys=key_data)
+		}
+		if k.end_time == None:
+			data["status"] = "ACTIVE"
+		elif k.end_time >= now:
+			data["status"] = "PENDING_CANCEL"
+		else:
+			data["status"] = "CANCELLED"
+		key_data.append(data)
+	return render_template("key.html", keys=key_data, )
 
 @app.route("/subscribe", methods=["POST"])
 @user_only
