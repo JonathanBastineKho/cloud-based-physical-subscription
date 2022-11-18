@@ -20,6 +20,7 @@ class Company(UserMixin, datab.Model):
     password = datab.Column(datab.String(1000), nullable=False)
     address = datab.Column(datab.String(250), nullable=False)
     door = datab.relationship("Door", back_populates="company")
+    sale = datab.relationship("Sale", back_populates="company")
     phonepass_id = datab.Column(datab.BLOB(100000))
     phonepass_pw = datab.Column(datab.BLOB(100000))
 
@@ -55,5 +56,13 @@ class Key(datab.Model):
 	start_time = datab.Column(datab.Date, unique=True)
 	end_time = datab.Column(datab.Date, nullable=False)
 	duration = datab.column_property(start_time - end_time)
+
+class Sale(datab.Model):
+    __tablename__ = "sale"
+    sale_id = datab.Column(datab.Integer, nullable=False, primary_key=True)
+    company = datab.relationship("Company", back_populates="sale")
+    company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username'), nullable=False)
+    value = datab.Column(datab.Float, nullable=False)
+    date = datab.Column(datab.Date, nullable=False)
 
 datab.create_all()

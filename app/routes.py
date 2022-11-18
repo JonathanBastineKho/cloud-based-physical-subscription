@@ -1,7 +1,7 @@
 from flask import render_template, url_for, request, redirect, jsonify
 from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api, order_api, subscription_api, csrf
 from flask_login import login_user, login_required, current_user, logout_user
-from app.db import User, Company, Door, Key
+from app.db import User, Company, Door, Key, Sale
 from flask import session
 from functools import wraps
 import rsa
@@ -275,6 +275,13 @@ def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf
                 door_sn=door.serial_number,
                 user_username=user.username,
                 start_time=result["message"]["start_time"]
+            )
+        )
+        datab.session.add(
+            Sale(
+                company_username=door.company_username,
+                value=result["message"]["total_price"],
+                date=result["message"]["start_time"]
             )
         )
         datab.session.commit()
