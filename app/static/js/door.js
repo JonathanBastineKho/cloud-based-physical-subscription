@@ -1,5 +1,5 @@
 // set the modal menu element
-var edit, add, editModal, addModal, addModal2;
+var edit, add, showQR, editModal, addModal, addModal2, showQRmodal;
 
 // options with default values
 optionsModalDoor = {
@@ -15,6 +15,20 @@ optionsModalDoor = {
       console.log('modal has been toggled');
   }
 };
+
+optionsModalQR = {
+    placement: 'center-center',
+    backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-50',
+    onHide: () => {
+        console.log('modal is hidden');
+    },
+    onShow: () => {
+        console.log('modal is shown');
+    },
+    onToggle: () => {
+        console.log('modal has been toggled');
+    }
+  };
 
 async function toggleEditItem(){
     // Inject Modal
@@ -47,4 +61,25 @@ async function openAddItem(){
 function closeAddItem(){
     addModal.hide();
     $("#addProductModal").remove();
+}
+
+async function openQRmodal(){
+    // Inject Modal
+    if (!$('#QRmodal').length){
+        var serialnum = document.getElementById("serial_number").innerText;
+        console.log(serialnum);
+        await fetch(`/request_qr/${serialnum}`)
+        .then(function(response){
+            return response.text();
+        }).then(function(html){
+            $(html).insertAfter("#productPage");
+            showQR = document.getElementById('QRmodal');
+            showQRmodal = new Modal(showQR, optionsModalQR);
+        });
+        showQRmodal.show();
+    }
+}
+function closeQRmodal(){
+    showQRmodal.hide();
+    $("#QRmodal").remove();
 }

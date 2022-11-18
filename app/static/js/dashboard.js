@@ -1,7 +1,7 @@
 var drawer;
 // Drawer function
 $(document).ready(function(){
-    // requestDashboardPage("dashboard");
+    // requestDashboardPage("dashboardindex");
     const aside = document.getElementById("sidebar");
 
     const options = {

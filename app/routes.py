@@ -186,6 +186,11 @@ def content(content):
         return render_template(f"dashboardcomp/{content}.html", doors=doors)
     return render_template(f"dashboardcomp/{content}.html")
 
+@app.route("/request_qr/<string:serial_num>")
+@company_only
+def render_qr(serial_num):
+    return render_template(f"dashboardcomp/QRmodal.html", serial_num=serial_num)
+
 @app.route("/index_content/<path:content>")
 def index_content(content):
     return render_template(f"{content}.html")
@@ -253,7 +258,7 @@ def key():
 		key_data.append(data)
 	return render_template("key.html", keys=key_data)
 
-@app.route("/key/<int:key_id>/cancel", method="POST")
+@app.route("/key/<int:key_id>/cancel", methods=["POST"])
 @user_only
 def cancel_subscription(key_id:int):
 	cancel = subscription_api.cancel(key_id, when="END_OF_PERIOD")
