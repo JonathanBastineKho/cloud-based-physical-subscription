@@ -1,0 +1,91 @@
+<div class="mx-4 p-6 bg-white rounded-lg shadow-md dark:bg-gray-800 mt-24">
+    <h2 class="text-4xl font-bold dark:text-white mb-2">KRW 4000</h2>
+    <span class="text-md font-normal text-gray-500 lg:text-lg dark:text-gray-400">Total Sales</span>
+    <div class="h-96">
+       <canvas id="myChart" class="mt-8"></canvas>
+    </div>
+ </div>
+ <div class="mx-4 p-6 bg-white rounded-lg dark:bg-gray-800 mt-12">
+    <h3 class="text-2xl font-bold dark:text-white mb-2">Transactions</h3>
+    <span class="text-md font-normal text-gray-500 lg:text-lg dark:text-gray-400">This is a list of latest transactions</span>
+    <div class="overflow-x-auto relative sm:rounded-lg mt-8">
+       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+               <tr>
+                   <th scope="col" class="py-3 px-6">
+                       Product name
+                   </th>
+                   <th scope="col" class="py-3 px-6">
+                       Serial Number
+                   </th>
+                   <th scope="col" class="py-3 px-6">
+                       Category
+                   </th>
+                   <th scope="col" class="py-3 px-6">
+                       Value
+                   </th>
+               </tr>
+           </thead>
+           <tbody>
+               <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                   <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                       Apple MacBook Pro 17"
+                   </th>
+                   <td class="py-4 px-6">
+                       Sliver
+                   </td>
+                   <td class="py-4 px-6">
+                       Laptop
+                   </td>
+                   <td class="py-4 px-6">
+                       $2999
+                   </td>
+               </tr>
+               <tr class="bg-gray-50 border-b dark:bg-gray-700 dark:border-gray-700">
+                   <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                       Microsoft Surface Pro
+                   </th>
+                   <td class="py-4 px-6">
+                       White
+                   </td>
+                   <td class="py-4 px-6">
+                       Laptop PC
+                   </td>
+                   <td class="py-4 px-6">
+                       $1999
+                   </td>
+               </tr>
+               <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                   <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                       Magic Mouse 2
+                   </th>
+                   <td class="py-4 px-6">
+                       Black
+                   </td>
+                   <td class="py-4 px-6">
+                       Accessories
+                   </td>
+                   <td class="py-4 px-6">
+                       $99
+                   </td>
+               </tr>
+               <tr class="bg-gray-50 border-b dark:bg-gray-700 dark:border-gray-700">
+                   <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                       Google Pixel Phone
+                   </th>
+                   <td class="py-4 px-6">
+                       Gray
+                   </td>
+                   <td class="py-4 px-6">
+                       Phone
+                   </td>
+                   <td class="py-4 px-6">
+                       $799
+                   </td>
+               </tr>
+           </tbody>
+       </table>
+   </div>
+ </div>
+</div>
+<script src="{{ url_for('static', filename='js/dashboardindex.js') }}"></script>
