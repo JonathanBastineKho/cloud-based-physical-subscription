@@ -141,7 +141,7 @@ def dashboard():
                 else:
                     result = product_api.create_complete(
                         name=product_name,
-                        image_url=image_url,
+                        imageURL=image_url,
                         description=desc,
                         price=price,
                         recurring=True,
@@ -264,29 +264,38 @@ def subscribe():
 @app.route("/finishSubscribe-add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a", methods=["POST"])
 @csrf.exempt
 def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a():
-    content = request.json
-    result = subscription_api.check_status(content["id"])
-    if result["success"] and content["status"] == "ACTIVE":
-        door = Door.query.filter_by(door_id=result["message"]["door_id"]).first()
-        user = User.query.filter_by(customer_id=result["message"]["customer_id"]).first()
-        datab.session.add(
-            Key(
-                key_id=result["message"]["subscription_id"],
-                door_sn=door.serial_number,
-                user_username=user.username,
-                start_time=result["message"]["start_time"]
-            )
-        )
-        datab.session.add(
-            Sale(
-                company_username=door.company_username,
-                value=result["message"]["total_price"],
-                date=result["message"]["start_time"]
-            )
-        )
-        datab.session.commit()
-        return jsonify({'success':True})
-    return jsonify({'success':False})
+	content = request.json
+	result = subscription_api.info(content["id"])
+	if result["success"]:
+		# When creating new subscription
+		if content["status"] == "ACTIVE":
+			door = Door.query.filter_by(door_id=result["message"]["door_id"]).first()
+			datab.session.add(
+				Key(
+					key_id=content["id"],
+					door_sn=door.serial_number,
+					user_username=result["message"]["customer_username"],
+					start_time=result["message"]["start_date"]
+				)
+			)
+			datab.session.add(
+				Sale(
+					company_username=door.company_username,
+					value=result["message"]["total_price"],
+					date=result["message"]["start_date"]
+				)
+			)
+			datab.session.commit()
+			return jsonify({'success':True})
+	
+		# When cancelled/pending cancel
+		else:
+			key = Key.query.get(content["id"])
+			key.end_time = result["message"]["end_date"]
+			datab.session.commit()
+			return jsonify({'success':True})
+
+	return jsonify({'success':False})
 
 @app.route("/simulation/<serial_number>")
 @company_only

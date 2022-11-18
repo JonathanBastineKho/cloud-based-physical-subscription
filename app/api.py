@@ -894,7 +894,7 @@ class OrderAPI(API):
 		param_data = {
 			"customerId": customerID,
 			"items": [{
-				"currency": "SGD",
+				"currency": "KRW",
 				"minimumQuantity": 1,
 				"productCode": productCode,
 				"priceCode": priceCode
@@ -1059,9 +1059,9 @@ class SubscriptionAPI(API):
 			json=param_data
 		)
 	
-	def check_status(self, subscriptionID:int) -> dict:
+	def info(self, subscriptionID:int) -> dict:
 		"""
-		Retrieves the status of a specified subscription.
+		Retrieves the information of a specified subscription.
 
 		Parameters:
 		- subscriptionID(int) = Subscription ID.
@@ -1073,7 +1073,16 @@ class SubscriptionAPI(API):
 		res = self.__request_info(subscriptionID)
 		if res.status_code != 200:
 			return {"success": False, "message": f"<{res.status_code}> Failed to retrieve subscription {subscriptionID}'s status."}
-		return {"success": True,  "message": json.loads(res.text)["status"]}
+		data = json.loads(res.text)
+		msg = {
+			"status": data["status"],
+			"start_date": data["startDate"].split("T")[0],
+			"end_date": data["endDate"].split("T")[0] if data["endDate"] != None else None,
+			"total_price": data["price"]["price"],
+			"customer_username": data["customer"]["name"],
+			"door_id": data["parentOrder"]["items"][0]["product"]["id"]
+		}
+		return {"success": True,  "message": msg}
 	
 	def cancel(self, subscriptionID:int, when="NOW", specific_date=None) -> dict:
 		"""
