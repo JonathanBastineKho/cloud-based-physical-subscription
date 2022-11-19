@@ -239,7 +239,7 @@ def access():
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
 					return jsonify({"success": True, "message": f"User access granted."})
 				status = subscription_api.info(k.key_id)
-				if k.end_time == None and status["success"] and status["message"]["status"] == "ACTIVE":
+				if k.end_time == None and status["success"] and (status["message"]["status"] in ["ACTIVE", "PENDING_CANCEL"]):
 					company = Company.query.get(door.company_username)
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
@@ -249,41 +249,41 @@ def access():
 
 @app.route("/key", methods=["GET", "POST"])
 @user_only
-# @csrf.exempt
 def key():
-    if request.method == "POST":
-                if request.form["form_type"] == "cancel_subscription":
-                    print(request.form)
-                    key_id = request.form["key_id"]
-                    cancel = subscription_api.cancel(key_id, when="END_OF_PERIOD")
-                    if cancel["success"]:
-                        return jsonify({"success": True, "message": "Successfully cancelled subscription."})
-                    return jsonify({"success": False, "message": "Error! Failed to cancel subscription."})
-    keys = Key.query.filter_by(user_username=current_user.username).all()
-    key_data = []
-    now = datetime.date.today()
-    for k in keys:
-        door = Door.query.get(k.door_sn)
-        company = Company.query.get(door.company_username)
-        data = {
-            "product_name": door.door_name,
-            "company": company.username,
-            "category": door.category,
-            "start_date":k.start_time,
-            "interval": door.interval,
-            "status": k.end_time == None or k.end_time >= now,
-            "end_time": k.end_time,
-            "product_desc": door.description,
-            "key_id": k.key_id
-        }
-        if k.end_time == None:
-            data["status"] = "ACTIVE"
-        elif k.end_time >= now:
-            data["status"] = "PENDING_CANCEL"
-        else:
-            data["status"] = "CANCELLED"
-        key_data.append(data)
-    return render_template("key.html", keys=key_data)
+	if request.method == "POST":
+		if request.form["form_type"] == "cancel_subscription":
+			print(request.form)
+			key_id = request.form["key_id"]
+			cancel = subscription_api.cancel(key_id, when="END_OF_PERIOD")
+			if cancel["success"]:
+				return jsonify({"success": True, "message": "Successfully cancelled subscription."})
+			return jsonify({"success": False, "message": "Error! Failed to cancel subscription."})
+	
+	keys = Key.query.filter_by(user_username=current_user.username).all()
+	key_data = []
+	now = datetime.date.today()
+	for k in keys:
+		door = Door.query.get(k.door_sn)
+		company = Company.query.get(door.company_username)
+		data = {
+			"product_name": door.door_name,
+			"company": company.username,
+			"category": door.category,
+			"start_date":k.start_time,
+			"interval": door.interval,
+			"status": k.end_time == None or k.end_time >= now,
+			"end_time": k.end_time,
+			"product_desc": door.description,
+			"key_id": k.key_id
+		}
+		if k.end_time == None:
+			data["status"] = "ACTIVE"
+		elif k.end_time >= now:
+			data["status"] = "PENDING_CANCEL"
+		else:
+			data["status"] = "CANCELLED"
+		key_data.append(data)
+	return render_template("key.html", keys=key_data)
 
 @app.route("/subscribe", methods=["POST"])
 @user_only
