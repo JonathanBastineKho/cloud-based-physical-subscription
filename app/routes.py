@@ -84,7 +84,7 @@ def complogin():
         if company != None and bcrypt.check_password_hash(pw_hash=company.password, password=request.form["password"]):
             session['user_type'] = 'company'
             login_user(company)
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
     return render_template("complogin.html")
 
 @app.route("/companyregister", methods=["GET", "POST"])
@@ -103,7 +103,7 @@ def compregister():
             datab.session.commit()
             session['user_type'] = 'company'
             login_user(company)
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
     return render_template("compregister.html")
 
 @app.route("/logout")
@@ -348,7 +348,7 @@ def simulation(serial_number):
 	if door != None:
 		simulateDoor = door_api.check_status(doorID=serial_number, id=phonepass_id, password=phonepass_pw)
 		if simulateDoor["success"]:
-			if simulateDoor["result"] == "Bridge Off":
+			if simulateDoor["result"] == "Bridge OFF":
 				return render_template("simulation.html", door_info="Open", serial_num = serial_number)
 			return render_template("simulation.html", door_info=simulateDoor["result"], serial_num = serial_number)
 	return render_template("simulation.html", door_info="Error, door not found", serial_num = serial_number)
