@@ -302,7 +302,9 @@ def subscribe():
     if result["success"]:
         print(result)
         order_code = result["message"]["orderCode"]
-        return order_api.get_payment_url(order_code,successURL="", errorURL="", cancelURL="")
+        base_url = request.base_url.replace("/subscribe", "")
+        return order_api.get_payment_url(order_code,successURL=f"{base_url}/successPayment", 
+        errorURL=f"{base_url}/errorPayment", cancelURL=f"{base_url}/cancelPayment")
 
 @app.route("/finishSubscribe-add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a", methods=["POST"])
 @csrf.exempt
@@ -362,3 +364,15 @@ def test():
     if request.method == "POST":
         print(request.form)
     return render_template("tester.html")
+
+@app.route("/successPayment")
+def success_payment():
+    return render_template("afterPayment.html", status="Success")
+
+@app.route("/errorPayment")
+def error_payment():
+    return render_template("afterPayment.html", status="Error")
+
+@app.route("/cancelPayment")
+def cancel_payment():
+    return render_template("afterPayment.html", status="Cancel")
