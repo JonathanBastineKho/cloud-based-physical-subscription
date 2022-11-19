@@ -69,7 +69,7 @@ async function cancelSubscription(formData) {
 	})
 	.then(function(res){
 		return res.json();
-	}).then(function(data){
+	}).then(async function(data){
 		if (data.status) {
 			$("#subscription-cancel-alert_icon > svg").empty();
 			$("#subscription-cancel-alert_icon > svg").append(
@@ -78,7 +78,7 @@ async function cancelSubscription(formData) {
 		}
 		$("#subscription-cancel-alert_text").text(data.message);
 		$("#subscription-cancel-alert").removeClass("hidden");
-		sleep(3000);
+		await sleep(3000);
 		hideToast();
 	})
 }
