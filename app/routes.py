@@ -175,7 +175,7 @@ def dashboard():
             pp_pw = request.form["pp_password"].encode('utf8')
             current_user.phonepass_pw = rsa.encrypt(pp_pw, publicKey)
             datab.session.commit()
-
+    # Get method
     return render_template("dashboard.html")
 
 @app.route("/dashboard_content/<path:content>")
@@ -184,6 +184,23 @@ def content(content):
     if content == "door":
         doors = Door.query.filter_by(company_username=current_user.username).all()
         return render_template(f"dashboardcomp/{content}.html", doors=doors)
+    elif "dashboardindex" in content:
+        result = Sale.query.filter_by(company_username=current_user.username).all()
+        lst_returned = []
+        for sale in result:
+            door = Door.query.filter_by(serial_number=sale.serial_number).first()
+            lst_returned.append({
+                "door_name" : door.door_name,
+                "serial_number" : sale.serial_number,
+                "category" : door.category,
+                "value" : sale.value,
+                "transaction_date": sale.date.strftime("%Y-%m-%d")
+            })
+        if content == "dashboardindexgraph":
+            return jsonify(sorted(lst_returned, key=lambda lst:datetime.datetime.strptime(lst["transaction_date"], "%Y-%m-%d")))
+        total_sales = sum([i["value"] for i in lst_returned])
+        return render_template(f"dashboardcomp/{content}.html", sales=lst_returned, total_sales=total_sales)
+        
     return render_template(f"dashboardcomp/{content}.html")
 
 @app.route("/request_qr/<string:serial_num>")
@@ -221,7 +238,7 @@ def access():
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
 					return jsonify({"success": True, "message": f"User access granted."})
-				status = subscription_api.info(key.key_id)
+				status = subscription_api.info(k.key_id)
 				if k.end_time == None and status["success"] and status["message"]["status"] == "ACTIVE":
 					company = Company.query.get(door.company_username)
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
@@ -232,43 +249,42 @@ def access():
 
 @app.route("/key", methods=["GET", "POST"])
 @user_only
-@csrf.exempt
+# @csrf.exempt
 def key():
-	if request.method == "GET":
-		keys = Key.query.filter_by(user_username=current_user.username).all()
-		key_data = []
-		now = datetime.date.today()
-		for k in keys:
-			door = Door.query.get(k.door_sn)
-			company = Company.query.get(door.company_username)
-			data = {
-				"product_name": door.door_name,
-				"company": company.username,
-				"category": door.category,
-				"start_date":k.start_time,
-				"interval": door.interval,
-				"status": k.end_time == None or k.end_time >= now,
-				"end_time": k.end_time,
-				"product_desc": door.description,
-				"key_id": k.key_id
-			}
-			if k.end_time == None:
-				data["status"] = "ACTIVE"
-			elif k.end_time >= now:
-				data["status"] = "PENDING_CANCEL"
-			else:
-				data["status"] = "CANCELLED"
-			key_data.append(data)
-		return render_template("key.html", keys=key_data)
-
-	if request.method == "POST":
-		if request.form["form_type"] == "cancel_subscription":
-			print(request.form)
-			key_id = request.form["key_id"]
-			cancel = subscription_api.cancel(key_id, when="END_OF_PERIOD")
-			if cancel["success"]:
-				return jsonify({"success": True, "message": "Successfully cancelled subscription."})
-			return jsonify({"success": False, "message": "Error! Failed to cancel subscription."})
+    if request.method == "POST":
+                print("executed")
+                if request.form["form_type"] == "cancel_subscription":
+                    print(request.form)
+                    key_id = request.form["key_id"]
+                    cancel = subscription_api.cancel(key_id, when="END_OF_PERIOD")
+                    if cancel["success"]:
+                        return jsonify({"success": True, "message": "Successfully cancelled subscription."})
+                    return jsonify({"success": False, "message": "Error! Failed to cancel subscription."})
+    keys = Key.query.filter_by(user_username=current_user.username).all()
+    key_data = []
+    now = datetime.date.today()
+    for k in keys:
+        door = Door.query.get(k.door_sn)
+        company = Company.query.get(door.company_username)
+        data = {
+            "product_name": door.door_name,
+            "company": company.username,
+            "category": door.category,
+            "start_date":k.start_time,
+            "interval": door.interval,
+            "status": k.end_time == None or k.end_time >= now,
+            "end_time": k.end_time,
+            "product_desc": door.description,
+            "key_id": k.key_id
+        }
+        if k.end_time == None:
+            data["status"] = "ACTIVE"
+        elif k.end_time >= now:
+            data["status"] = "PENDING_CANCEL"
+        else:
+            data["status"] = "CANCELLED"
+        key_data.append(data)
+    return render_template("key.html", keys=key_data)
 
 @app.route("/subscribe", methods=["POST"])
 @user_only
@@ -293,7 +309,7 @@ def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf
 	if result["success"]:
 		# When creating new subscription
 		if content["status"] == "ACTIVE":
-			start_date = datetime.datetime.strptime(result["message"]["start_date"], "%Y-%m-%d").date
+			start_date = datetime.datetime.strptime(result["message"]["start_date"], "%Y-%m-%d")
 			door = Door.query.filter_by(door_id=result["message"]["door_id"]).first()
 			datab.session.add(
 				Key(
@@ -307,7 +323,8 @@ def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf
 				Sale(
 					company_username=door.company_username,
 					value=result["message"]["total_price"],
-					date=start_date
+					date=start_date,
+                    serial_number=door.serial_number
 				)
 			)
 			datab.session.commit()

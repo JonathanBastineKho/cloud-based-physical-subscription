@@ -41,6 +41,7 @@ async function openScanModal(){
             cameraId, 
             {fps: 5},
             (decodedText, decodedResult) => {
+                html5QrCode.stop();
                 var formData = new FormData();
                 formData.append("serial_number", decodedText);
                 formData.append("csrf_token", document.getElementById("csrf_tok").value)
@@ -92,7 +93,6 @@ async function submitData(formData){
             });
         }
     });
-    html5QrCode.stop();
 }
 function accessBtn(event){
     event.preventDefault();

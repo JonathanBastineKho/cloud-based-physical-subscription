@@ -42,6 +42,7 @@ class Door(datab.Model):
     price_code = datab.Column(datab.String(250), nullable=False)
     interval = datab.Column(datab.String(10), datab.CheckConstraint("interval in ('hour', 'day', 'month', 'year')"))
     image_url = datab.Column(datab.String(1000))
+    sale = datab.relationship("Sale", back_populates="door")
     posting_status = datab.Column(datab.String(50), 
     datab.CheckConstraint("posting_status in ('SALE', 'OUT_OF_STOCK', 'UNSOLD', 'WAITING_FOR_APPROVAL', 'REJECTED')"), 
     nullable=False)
@@ -60,6 +61,8 @@ class Key(datab.Model):
 class Sale(datab.Model):
     __tablename__ = "sale"
     sale_id = datab.Column(datab.Integer, nullable=False, primary_key=True)
+    door = datab.relationship("Door", back_populates="sale")
+    serial_number = datab.Column(datab.Integer, datab.ForeignKey('door.serial_number'), nullable=False)
     company = datab.relationship("Company", back_populates="sale")
     company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username'), nullable=False)
     value = datab.Column(datab.Float, nullable=False)
