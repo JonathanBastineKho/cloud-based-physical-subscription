@@ -7,6 +7,7 @@ module.exports = {
       "./node_modules/flowbite/**/*.js",
       "./static/js/dashboard.js",
       "./static/js/door.js",
+      "./static/js/index.js",
 	  "./static/js/key.js",
   ],
   theme: {
