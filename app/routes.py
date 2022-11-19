@@ -237,14 +237,18 @@ def access():
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
-					return jsonify({"success": True, "message": f"User access granted."})
+					if result["success"] and result["message"] == "Open":
+						return jsonify({"success": True, "message": f"User access granted."})
+					return jsonify({"success": False, "message": f"Door access failed. Try again."})
 				status = subscription_api.info(k.key_id)
 				if k.end_time == None and status["success"] and status["message"]["status"] == "ACTIVE":
 					company = Company.query.get(door.company_username)
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
-					return jsonify({"success": True, "message": f"User access granted."})
+					if result["success"] and result["message"] == "Open":
+						return jsonify({"success": True, "message": f"User access granted."})
+					return jsonify({"success": False, "message": f"Door access failed. Try again."})
 		return jsonify({"success": False, "message": f"User's key has expired."})
 
 @app.route("/key", methods=["GET", "POST"])
