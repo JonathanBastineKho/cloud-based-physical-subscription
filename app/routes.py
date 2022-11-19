@@ -341,14 +341,17 @@ def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf
 @app.route("/simulation/<serial_number>")
 @company_only
 def simulation(serial_number):
-    serial_number = serial_number
-    door = Door.query.filter_by(serial_number=serial_number,company_username=current_user.username).first()
-    phonepass_id = rsa.decrypt(current_user.phonepass_id, privateKey)
-    phonepass_pw = rsa.decrypt(current_user.phonepass_pw, privateKey)
-    if door != None:
-        simulateDoor = door_api.check_status(doorID=serial_number, id=phonepass_id, password=phonepass_pw)
-        return render_template("simulation.html", door_info=simulateDoor["result"], serial_num = serial_number)
-    return render_template("simulation.html", door_info="Error, door not found", serial_num = serial_number)
+	serial_number = serial_number
+	door = Door.query.filter_by(serial_number=serial_number,company_username=current_user.username).first()
+	phonepass_id = rsa.decrypt(current_user.phonepass_id, privateKey)
+	phonepass_pw = rsa.decrypt(current_user.phonepass_pw, privateKey)
+	if door != None:
+		simulateDoor = door_api.check_status(doorID=serial_number, id=phonepass_id, password=phonepass_pw)
+		if simulateDoor["success"]:
+			if simulateDoor["result"] == "Bridge Off":
+				return render_template("simulation.html", door_info="Open", serial_num = serial_number)
+			return render_template("simulation.html", door_info=simulateDoor["result"], serial_num = serial_number)
+	return render_template("simulation.html", door_info="Error, door not found", serial_num = serial_number)
 
 @app.route("/test", methods=["GET", "POST"])
 def test():
