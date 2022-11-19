@@ -66,7 +66,8 @@ async function cancelSubscription(formData) {
 	await fetch('/key', {
 		method : 'POST',
 		body : formData
-	}).then(function(res){
+	})
+	.then(function(res){
 		return res.json();
 	}).then(function(data){
 		$("#subscription-cancel-alert_text").text(data.message);

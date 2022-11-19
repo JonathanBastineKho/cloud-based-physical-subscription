@@ -252,7 +252,6 @@ def access():
 # @csrf.exempt
 def key():
     if request.method == "POST":
-                print("executed")
                 if request.form["form_type"] == "cancel_subscription":
                     print(request.form)
                     key_id = request.form["key_id"]
@@ -350,3 +349,9 @@ def simulation(serial_number):
         simulateDoor = door_api.check_status(doorID=serial_number, id=phonepass_id, password=phonepass_pw)
         return render_template("simulation.html", door_info=simulateDoor["result"], serial_num = serial_number)
     return render_template("simulation.html", door_info="Error, door not found", serial_num = serial_number)
+
+@app.route("/test", methods=["GET", "POST"])
+def test():
+    if request.method == "POST":
+        print(request.form)
+    return render_template("tester.html")
