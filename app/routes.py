@@ -332,7 +332,7 @@ def finishSubscribe_add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf
 		# When cancelled/pending cancel
 		else:
 			key = Key.query.get(content["id"])
-			key.end_time = datetime.datetime.strptime(result["message"]["end_date"], "%Y-%m-%d").date
+			key.end_time = datetime.datetime.strptime(result["message"]["end_date"], "%Y-%m-%d")
 			datab.session.commit()
 			return jsonify({'success':True})
 
