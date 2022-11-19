@@ -239,7 +239,7 @@ def access():
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
 					return jsonify({"success": True, "message": f"User access granted."})
 				status = subscription_api.info(k.key_id)
-				if k.end_time == None and status["success"] and (status["message"]["status"] in ["ACTIVE", "PENDING_CANCEL"]):
+				if k.end_time == None and status["success"] and status["message"]["status"] == "ACTIVE":
 					company = Company.query.get(door.company_username)
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
