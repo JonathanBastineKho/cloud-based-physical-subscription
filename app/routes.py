@@ -237,7 +237,7 @@ def access():
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
-					if result["success"] and result["message"] == "Open":
+					if result["success"] and result["result"] == "Open":
 						return jsonify({"success": True, "message": f"User access granted."})
 					return jsonify({"success": False, "message": f"Door access failed. Try again."})
 				status = subscription_api.info(k.key_id)
@@ -246,7 +246,7 @@ def access():
 					phonepass_id = rsa.decrypt(company.phonepass_id, privateKey)
 					phonepass_pw = rsa.decrypt(company.phonepass_pw, privateKey)
 					result = door_api.unlock(phonepass_id, phonepass_pw, serial_number, current_user.phone_number)
-					if result["success"] and result["message"] == "Open":
+					if result["success"] and result["result"] == "Open":
 						return jsonify({"success": True, "message": f"User access granted."})
 					return jsonify({"success": False, "message": f"Door access failed. Try again."})
 		return jsonify({"success": False, "message": f"User's key has expired."})
