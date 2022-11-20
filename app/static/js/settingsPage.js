@@ -37,12 +37,22 @@ async function postEditSettings(event){
     await fetch(url, {
         method: 'POST',
         body: formData
-    }).then(function(res){
+    }).then(async function(res){
+        modals[modal]();
         if (res.ok){
             console.log("ok");
+            $("#toast-success").fadeIn(1000);
+            $("#toast-success").css('display', 'flex');
+            await sleep(5000);
+            $("#toast-success").fadeOut(1000);
         } else{
             console.log("false");
         }
     });
-    modals[modal]();
+}
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+function closeToast(){
+    $("#toast-success").fadeOut(1000);
 }
