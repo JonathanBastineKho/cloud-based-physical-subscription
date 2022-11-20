@@ -21,8 +21,8 @@ class Company(UserMixin, datab.Model):
     address = datab.Column(datab.String(250), nullable=False)
     door = datab.relationship("Door", back_populates="company")
     sale = datab.relationship("Sale", back_populates="company")
-    phonepass_id = datab.Column(datab.BLOB(100000))
-    phonepass_pw = datab.Column(datab.BLOB(100000))
+    phonepass_id = datab.Column(datab.LargeBinary(100000))
+    phonepass_pw = datab.Column(datab.LargeBinary(100000))
 
     def get_id(self):
         return self.username
@@ -36,7 +36,7 @@ class Door(datab.Model):
     category = datab.Column(datab.String(50))
     description = datab.Column(datab.String(1000))
     company = datab.relationship("Company", back_populates="door")
-    company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username')) 
+    company_username = datab.Column(datab.String(250), datab.ForeignKey('company.username')) 
     key = datab.relationship("Key", back_populates="door")
     price = datab.Column(datab.Float)
     price_code = datab.Column(datab.String(250), nullable=False)
@@ -50,7 +50,7 @@ class Door(datab.Model):
 class Key(datab.Model):
 	__tablename__ = "key"
 	key_id = datab.Column(datab.Integer, nullable=False, primary_key=True)
-	door_sn = datab.Column(datab.Integer, datab.ForeignKey('door.serial_number'), nullable=False)
+	door_sn = datab.Column(datab.String(250), datab.ForeignKey('door.serial_number'), nullable=False)
 	door = datab.relationship("Door", back_populates="key")
 	user_username = datab.Column(datab.String(250), datab.ForeignKey('user.username'))
 	user = datab.relationship("User", back_populates="key")
@@ -62,9 +62,9 @@ class Sale(datab.Model):
     __tablename__ = "sale"
     sale_id = datab.Column(datab.Integer, nullable=False, primary_key=True)
     door = datab.relationship("Door", back_populates="sale")
-    serial_number = datab.Column(datab.Integer, datab.ForeignKey('door.serial_number'), nullable=False)
+    serial_number = datab.Column(datab.String(250), datab.ForeignKey('door.serial_number'), nullable=False)
     company = datab.relationship("Company", back_populates="sale")
-    company_username = datab.Column(datab.Integer, datab.ForeignKey('company.username'), nullable=False)
+    company_username = datab.Column(datab.String(250), datab.ForeignKey('company.username'), nullable=False)
     value = datab.Column(datab.Float, nullable=False)
     date = datab.Column(datab.Date, nullable=False)
 
