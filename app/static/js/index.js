@@ -34,7 +34,7 @@ async function openScanModal(){
     });
     Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
-            var cameraId = devices[0].id;
+            var cameraId = devices[devices.length - 1].id;
             // .. use this to start scanning.
             html5QrCode = new Html5Qrcode("scanQR");
             html5QrCode.start(

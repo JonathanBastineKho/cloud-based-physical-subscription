@@ -1,5 +1,5 @@
 from flask import render_template, url_for, request, redirect, jsonify
-from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api, order_api, subscription_api, csrf
+from app import app, login_manager, bcrypt, datab, product_api, door_api, basedir, publicKey, privateKey, customer_api, order_api, subscription_api, csrf, files, bucket_name
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import User, Company, Door, Key, Sale
 from flask import session
@@ -57,7 +57,7 @@ def register():
                 customer_id = res["message"]["id"]
                 user = User(username=username,
                 email=email, 
-                password=bcrypt.generate_password_hash(request.form["password"], 13, prefix=b"2b"),
+                password=bcrypt.generate_password_hash(request.form["password"], 13, prefix=b"2b").decode('utf-8'),
                 phone_number=phone_number,
                 customer_id=customer_id)
                 datab.session.add(user)
@@ -97,7 +97,7 @@ def compregister():
         if Company.query.filter_by(email=email).first() == None and Company.query.filter_by(username=username).first() == None:
             company = Company(username=username,
             email=email,
-            password=bcrypt.generate_password_hash(password, 13, prefix=b"2b"),
+            password=bcrypt.generate_password_hash(password, 13, prefix=b"2b").decode("utf-8"),
             address=address)
             datab.session.add(company)
             datab.session.commit()
@@ -127,9 +127,8 @@ def dashboard():
             id=rsa.decrypt(current_user.phonepass_id, privateKey).decode('utf8'),
             password=rsa.decrypt(current_user.phonepass_pw, privateKey).decode('utf8'))
             if result_door["success"] and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename) # might be different for other OS
-                file.save(os.path.join(basedir, image_url))
+                google_file = files.save(file, public=True)
+                image_url = f"https://storage.googleapis.com/{bucket_name}/{google_file}"
                 if interval.lower() == "hour":
                     result = product_api.create_complete(
                         name=product_name,
@@ -302,7 +301,7 @@ def subscribe():
     if result["success"]:
         print(result)
         order_code = result["message"]["orderCode"]
-        base_url = request.base_url.replace("/subscribe", "")
+        base_url = request.base_url.replace("/subscribe", "").replace("http://", "https://")
         return order_api.get_payment_url(order_code,successURL=f"{base_url}/successPayment", 
         errorURL=f"{base_url}/errorPayment", cancelURL=f"{base_url}/cancelPayment")
 

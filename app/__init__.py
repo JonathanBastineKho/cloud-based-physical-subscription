@@ -9,6 +9,8 @@ import os
 import rsa
 from dotenv import load_dotenv
 from flask_qrcode import QRcode
+from flask_googlestorage import GoogleStorage, Bucket
+from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
@@ -20,6 +22,17 @@ QRcode(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 bcrypt = Bcrypt(app)
+
+files = Bucket("files")
+bucket_name = os.environ.get("BUCKET_NAME")
+storage = GoogleStorage(files)
+
+app.config.update(
+        GOOGLE_STORAGE_LOCAL_DEST = app.instance_path,
+        GOOGLE_STORAGE_SIGNATURE = {"expiration": timedelta(minutes=5)},
+        GOOGLE_STORAGE_FILES_BUCKET = "acehacks"
+    )
+storage.init_app(app)
 
 if os.environ.get("RSA_PUBLIC_KEY") == None or os.environ.get("RSA_PRIVATE_KEY") == None:
     publicKey, privateKey = rsa.newkeys(2048)

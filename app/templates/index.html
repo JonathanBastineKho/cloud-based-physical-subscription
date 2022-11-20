@@ -57,10 +57,18 @@
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="max-w-screen-xl mx-auto shadow-lg dark:shadow-md dark:bg-gray-800 rounded-xl dark:text-gray-600 p-8 flex justify-center">
+        <div>
+            <img src="{{url_for('static', filename='img/no_product.png')}}" alt="no product logo" class="opacity-50 dark:opacity-20 mb-8">
+            <span class="font-semibold">No Subscription Currently Available</span>
+        </div>
+
+    </div>
     {% endif %}
 </div>
 
-<footer class="bg-white dark:bg-gray-800 mt-24">
+<footer class="bg-gray-100 dark:bg-gray-800 mt-24">
     <div class="grid grid-cols-2 gap-8 py-8 px-6 md:grid-cols-4">
         <div>
             <h2 class="mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400">Company</h2>
@@ -128,7 +136,7 @@
             </ul>
         </div>
     </div>
-    <div class="py-6 px-4 bg-gray-100 dark:bg-gray-700 md:flex md:items-center md:justify-between">
+    <div class="py-6 px-4 bg-gray-200 dark:bg-gray-700 md:flex md:items-center md:justify-between">
         <span class="text-sm text-gray-500 dark:text-gray-300 sm:text-center">© 2022 <a href="">Ace</a>. All Rights Reserved.
         </span>
         <div class="flex mt-4 space-x-6 sm:justify-center md:mt-0">
