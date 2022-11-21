@@ -46,10 +46,13 @@ Though, lingering thoughts of limiting physical contact still remain within the 
 ![Main Page](./development/sample_1.png)
 ![Key Page](./development/sample_2.png)
 ![Dashboard Page](./development/sample_3.png)
-![Scan QR](./development/sample_4.png)
-![Scan Loading](./development/sample_5.png)
-![Access Granted](./development/sample_6.png)
-
+<table>
+	<tr>
+		<td><img src="./development/sample_4.png"></td>
+		<td><img src="./development/sample_5.png"></td>
+		<td><img src="./development/sample_6.png"></td>
+	</tr>
+</table>
 <br>
 
 ## System architecture
