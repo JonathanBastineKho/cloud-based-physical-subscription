@@ -127,6 +127,10 @@ def dashboard():
             id=rsa.decrypt(current_user.phonepass_id, privateKey).decode('utf8'),
             password=rsa.decrypt(current_user.phonepass_pw, privateKey).decode('utf8'))
             if result_door["success"] and allowed_file(file.filename):
+				# IF YOU WANT TO HOST LOCALLY
+				# filename = secure_filename(file.filename)
+                # image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename) # might be different for other OS
+                # file.save(os.path.join(basedir, image_url))
                 google_file = files.save(file, public=True)
                 image_url = f"https://storage.googleapis.com/{bucket_name}/{google_file}"
                 if interval.lower() == "hour":
