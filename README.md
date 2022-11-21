@@ -17,6 +17,7 @@
 
 ## Authors
 <hr>
+
 - [@JonathanBastineKho (Jonathan Bastine Kho)](https://www.github.com/jonathanbastinekho)
 - [@edbertekaputera (Edbert Ekaputera)](https://www.github.com/edbertekaputera)
 - [@iAmKarly (Carlos Vincent Frasenda)](https://www.github.com/iamkarly)
@@ -25,6 +26,7 @@
 
 ## Acknowledgements
 <hr>
+ 
  - [APPETIZER HACKATHON 2022](https://www.api-appetizer.com)
  - [ONE FIRST (PHONEPASS API)](http://onefirst.co.kr)
  - [STEPPAY](https://www.steppay.kr)
