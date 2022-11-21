@@ -130,7 +130,6 @@ dmypy.json
 .pyre/
 
 .DS_Store
-development/
 test.py
 wsgi.py
 service_key.json

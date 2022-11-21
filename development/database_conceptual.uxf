@@ -1,0 +1,50 @@
+<diagram program="umletino" version="15.0.0"><zoom_level>14</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>378</x><y>284</y><w>182</w><h>112</h></coordinates><panel_attributes>Company
+--
+address
+phonepassId
+phonepassPw</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>378</x><y>494</y><w>182</w><h>84</h></coordinates><panel_attributes>User
+--
+customerId ID3
+phoneNumber
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>770</x><y>172</y><w>182</w><h>280</h></coordinates><panel_attributes>Door
+--
+serialNumber ID1
+steppayID ID2
+steppayCode ID3
+doorName
+category
+description
+price
+steppayPriceCode
+interval
+imageUrl
+postingStatus
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>714</x><y>578</y><w>182</w><h>140</h></coordinates><panel_attributes>Key
+--
+keyId ID1
+startTime
+endTime
+/duration
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>406</x><y>46</y><w>182</w><h>112</h></coordinates><panel_attributes>Sale
+--
+saleId ID1
+value
+date</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>546</x><y>312</y><w>252</w><h>70</h></coordinates><panel_attributes>lt=-
+m1=1..1
+r1=
+m2=0..*
+Provides &gt;</panel_attributes><additional_attributes>10;20;160;20</additional_attributes></element><element><id>Relation</id><coordinates><x>546</x><y>438</y><w>378</w><h>140</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=0..*
+Access &gt;</panel_attributes><additional_attributes>230;10;230;70;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>154</x><y>284</y><w>182</w><h>126</h></coordinates><panel_attributes>Account
+--
+username ID1
+email ID2
+password
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>322</x><y>326</y><w>84</w><h>42</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>40;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>224</x><y>396</y><w>182</w><h>168</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>110;100;10;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>812</x><y>522</y><w>42</w><h>84</h></coordinates><panel_attributes>lt=..</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>462</x><y>144</y><w>98</w><h>168</h></coordinates><panel_attributes>lt=-
+m1=1..1
+m2=0..*
+Deals ^</panel_attributes><additional_attributes>10;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>574</x><y>74</y><w>336</w><h>126</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1..1 
+for &gt;</panel_attributes><additional_attributes>10;20;200;20;200;70</additional_attributes></element></diagram>

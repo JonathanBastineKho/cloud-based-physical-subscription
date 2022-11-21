@@ -1,0 +1,26 @@
+Company(username, email, password, address, phonepassId, phonepassPw)
+Primary key = (username)
+Candidate key = (email)
+
+User(username, email, customerId, password, phoneNumber)
+Primary key = (username)
+Candidate key 1 = (email)
+Candidate key 2 = (customerId)
+
+Door(steppayID, steppayCode, doorName, serialNumber, category, description, companyUsername
+     price, priceCode, interval, imageUrl, postingStatus)
+Primary key = (serialNumber)
+Candidate key 1 = (steppayID)
+Candidate key 2 = (steppayCode)
+Foreign key = (companyUsername) REFERENCES Company (username)
+
+Sale(saleId, value, date, companyUsername, serialNumber)
+Primary key = (saleId)
+Foreign key 1 = (companyUsername) REFERENCES Company (username)
+Foreign key 2 = (serialNumber) REFERENCES Door (serialNumber)
+
+Key(keyId, startTime, endTime, duration, serialNumber, userUsername)
+Primary key = (keyId)
+Foreign key 1 = (serialNumber) REFERENCES Door (serialNumber)
+Foreign key 2 = (userUsername) REFERENCES User (username)
+
