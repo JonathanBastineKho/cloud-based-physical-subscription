@@ -63,11 +63,10 @@ function closeAddItem(){
     $("#addProductModal").remove();
 }
 
-async function openQRmodal(){
+async function openQRmodal(event){
     // Inject Modal
     if (!$('#QRmodal').length){
-        var serialnum = document.getElementById("serial_number").innerText;
-        console.log(serialnum);
+        var serialnum = $(event.target).parent().parent().find("#serial_number").text();
         await fetch(`/request_qr/${serialnum}`)
         .then(function(response){
             return response.text();
