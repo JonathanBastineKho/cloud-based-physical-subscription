@@ -293,21 +293,24 @@ def key():
 	return render_template("key.html", keys=key_data)
 
 @app.route("/subscribe", methods=["POST"])
-@user_only
 def subscribe():
-    door_id = request.form["door_id"]
-    door = Door.query.filter_by(door_id=door_id).first()
-    result = order_api.create(
-        customerID=current_user.customer_id,
-        productCode=door.product_code,
-        priceCode=door.price_code
-    )
-    if result["success"]:
-        print(result)
-        order_code = result["message"]["orderCode"]
-        base_url = request.base_url.replace("/subscribe", "").replace("http://", "https://")
-        return order_api.get_payment_url(order_code,successURL=f"{base_url}/successPayment", 
-        errorURL=f"{base_url}/errorPayment", cancelURL=f"{base_url}/cancelPayment")
+    if current_user.is_authenticated and session.get("user_type") == "individual":
+        door_id = request.form["door_id"]
+        door = Door.query.filter_by(door_id=door_id).first()
+        result = order_api.create(
+            customerID=current_user.customer_id,
+            productCode=door.product_code,
+            priceCode=door.price_code
+        )
+        if result["success"]:
+            print(result)
+            order_code = result["message"]["orderCode"]
+            base_url = request.base_url.replace("/subscribe", "").replace("http://", "https://")
+            url = order_api.get_payment_url(order_code,successURL=f"{base_url}/successPayment", 
+            errorURL=f"{base_url}/errorPayment", cancelURL=f"{base_url}/cancelPayment")
+            return jsonify({"success":True, "url": url})
+    else:
+        return jsonify({"success":False})
 
 @app.route("/finishSubscribe-add42645cb668c92f0491e98c5365c3cb8af0b663f6b02431df56bee8baf7a25352b7bd6ccc7c086bd0e2515a91d5cbd032d0b0f11baf7c0a", methods=["POST"])
 @csrf.exempt

@@ -10,10 +10,14 @@ async function subscribe(event, doorID){
         method : "POST",
         body : form
     }).then(function(res){
-        return res.text();
-    }).then(function(url){
-        window.open(url,
-            "test",
-            "width = 425, height = 812, top = 100, left = 200, location = no")
+        return res.json();
+    }).then(function(response){
+        if (response["success"]){
+            window.open(response["url"],
+                "test",
+                "width = 425, height = 812, top = 100, left = 200, location = no");
+        } else {
+            window.location.href ="../login";
+        }
     });
 }
