@@ -180,7 +180,6 @@ python3 application.py
 ```
 
 <br>
-<br>
 
 ## License
 <hr>
