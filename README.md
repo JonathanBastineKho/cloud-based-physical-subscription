@@ -2,12 +2,17 @@
 # Autonomous Cloud-based Exchange (ACE) for Physical Subscriptions
 
 <div align="center">
-	<a href="https://github.com/JonathanBastineKho/cloud-based-physical-subscription">
+	<a href="https://acehacks.tk">
 	<img src="./app/static/img/icon.png" alt="Logo" width="160" height="160">
 	</a>
 	<h3 align="center">
 	<strong>ACE Physical Subscription</strong>
 	</h3>
+	<a href="https://acehacks.tk">
+		<strong>View Deployed WebApp</strong>
+	</a>
+	<br>
+	<br>
 	<p align="center">
 		An Autonomous Cloud-based Exchange for physical-based subscriptions utilizing the Phonepass API for the physical access authorization mechanism and STEPPAY API for the subscription and payment gateway management.
 	</p>
